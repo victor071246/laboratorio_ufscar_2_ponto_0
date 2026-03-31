@@ -1,5 +1,5 @@
 use bcrypt::{hash, verify, DEFAULT_COST};
-use jsonwebtoken::{encode, EncondingKey, Header};
+use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use chrono::{Utc, Duration};
@@ -19,7 +19,7 @@ pub struct Claims {
 
 pub fn gerar_hash(senha: &str) -> String {
     hash(senha, DEFAULT_COST)
-    .expect("Erro ao gerar hash da senha");
+    .expect("Erro ao gerar hash da senha")
 }
 
 pub fn verificar_senha(senha: &str, hash: &str) -> bool {
@@ -48,7 +48,7 @@ pub fn gerar_jwt(
     encode(
         &Header::default(),
         &claims,
-        &EncondingKey::from_secret(secret.as_bytes()),
+        &EncodingKey::from_secret(secret.as_bytes()),
     )
     .expect("Erro ao gerar JWT")
 }

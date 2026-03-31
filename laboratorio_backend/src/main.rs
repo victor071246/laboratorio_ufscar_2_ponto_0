@@ -1,18 +1,12 @@
 mod config;
 mod db;
-mod errors;
 mod response;
-
 mod models;
 mod dto;
-mod handlers;
-mod middleware;
-mod routes;
 mod services;
 
 use std::net::SocketAddr;
 use axum::Router;
-use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -30,31 +24,24 @@ async fn main() {
 
     tracing_subscriber::registry()
         .with(tracing_subscriber::EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| "lab_ufscar=debugmtower_http=debug".into.()))
+            .unwrap_or_else(|_| "lab_ufscar=debug, tower_http=debug".into()))
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let config = Config::from_env().expect("Erro ao carregar configurações do ambiente");
+    let config = Config::from_env().expect("Erro ao carregar configurações");
 
-    tracing::info!("Conectando ao banco de dados...");
+    tracing::info!("Conectando ao banco de dados");
     let pool = db::criar_pool(&config.database_url)
         .await
-        .expect("Erro ao conectar ao banco de dados");
-    tracing::info("Banco de dados conectado");
+        .expect("Erro ao conectar ao banco");
+    tracing::info!("Banco conectado");
 
     let state = AppState {
         db: pool,
         config: config.clone(),
     };
 
-    let cors = CorsLayer::new()
-        .allow_origin(Any)
-        .allow_methos(Any)
-        .allow_header(Any);
-
     let app = Router::new()
-        .nest("/api", routes::criar_rotas())
-        .layers(cors)
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 
@@ -66,10 +53,9 @@ async fn main() {
 
     let listener = tokio::net::TcpListener::bind(addr)
         .await
-        .expect("Erro ao fazer bind do endereço");
+        .expect("Erro ao fazer bind");
 
     axum::serve(listener, app)
         .await
         .expect("Erro ao iniciar o servidor");
-        
 }
