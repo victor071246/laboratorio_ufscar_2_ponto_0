@@ -4,6 +4,8 @@ mod response;
 mod models;
 mod dto;
 mod services;
+mod routes;
+mod handlers;
 
 use std::net::SocketAddr;
 use axum::Router;
