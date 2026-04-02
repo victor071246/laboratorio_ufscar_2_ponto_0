@@ -17,8 +17,8 @@ pub async fn login(
 ) -> (StatusCode, Json<ApiResponse<LoginResponse>>) {
     let usuario = sqlx::query_as!(
         crate::models::usuario::Usuario,
-        r#"SELECT id, nome, email, senha_hash, papel as "papel: PapelUsuario",
-            FROM usuario WHERE email = $1 AND ativo = true"#
+        r#"SELECT id, uuid, nome, email, telefone, senha_hash, papel as "papel: PapelUsuario", ativo, criado_em, criado_por
+            FROM usuario WHERE email = $1 AND ativo = true"#,
             payload.email
     )
     .fetch_optional(&state.db)
