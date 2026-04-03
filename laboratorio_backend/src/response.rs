@@ -17,13 +17,13 @@ impl<T: Serialize> DinamicResponse<T> {
         }
     }
 
-    pub fn error(message: impl Into<String>) -> DinamicResponse<()> {
-        DinamicResponse{
-            success: false,
-            message: message.into(),
-            data: None,
+    pub fn error(message: impl Into<String>) -> Self {
+        Self { 
+            success: false, 
+            message: message.into(), 
+            data: None 
         }
-    }
+   }
 }
 
 /// Wrapper para retornar responsta com status HTTP
