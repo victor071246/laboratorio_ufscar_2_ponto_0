@@ -10,6 +10,94 @@ use crate::models::equipamento::{Equipamento, EstadoEquipamento};
 use crate::response::ApiResponse;
 use crate::AppState;
 
+pub async fn criar(
+    State(state): State<AppState>,
+    Json(payload): Json<CriarEquipamentoDto>,
+) -> ApiResponse<Equipamento> {
+    let estado = payload.estado.unwrap_or(EstadoEquipamento::Disponivel);
+
+    let equipamento = sqlx::query_as!(
+        Equipamento,
+        r#"INSERT INTO equipamento (nome, descricao, estado, data_aquisicao,
+        peso_kg, largura_cm, altura_cm, profundidade_cm)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
+        data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+        ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por"#,
+        payload.nome,
+        payload.descricao,
+        estado as EstadoEquipamento,
+        payload.data_aquisicao,
+        payload.peso_kg,
+        payload.largura_cm,
+        payload.altura_cm,
+        payload.profundidade_cm
+    )
+    .fetch_one(&state.db)
+    .await;
+
+    match equipamento {
+        Ok(e) => ApiResponse(
+            StatusCode::CREATED,
+            DinamicResponse::success("Equipamento criado", e),
+        ),
+        Err(_) => ApiResponse(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DinamicResponse::error("Erro ao criar equipamento"),
+        ),
+    }
+}
+
+pub async fn atualizar(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+    Json(payload): Json<AtualizarEquipamentoDto>,
+) -> ApiResponse<Equipamento> {
+    let equipamento = sqlx::query_as!(
+        Equipamento,
+        r#"UPDATE equipamento SET
+            nome = COALESCE($1, nome),
+            descricao = COALESCE($2, descricao),
+            estado = COALESCE($3, estado),
+            data_aquisicao = COALESCE($4, data_aquisicao),
+            peso_kg = COALESCE($5, peso_kg),
+            largura_cm = COALESCE($6, largura_cm),
+            altura_cm = COALESCE($7, altura_cm),
+            profundidade_cm = COALESCE($8, profundidade_cm)
+            WHERE uuid = $9
+            RETURNING id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
+            data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+            ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por"#,
+            payload.nome,
+            payload.descricao,
+            payload.estado as Option<EstadoEquipamento>,
+            payload.data_aquisicao,
+            payload.peso_kg,
+            payload.largura_cm,
+            payload.altura_cm,
+            payload.profundidade_cm,
+            uuid
+    )
+    .fetch_optional(&state.db)
+    .await;
+
+    match equipamento {
+        Ok(Some(e)) => ApiResponse(
+            StatusCode::OK,
+            DinamicResponse::success("Equipamento atualizado", e)
+        ),
+        Ok(None) => ApiResponse(
+            StatusCode::NOT_FOUND,
+            DinamicResponse::error("Equipamento não encontrado")
+        ),
+        Err(e) => ApiResponse(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DinamicResponse::error(format!("Erro ao atualizar o equipamento: {}", e))
+        )
+    }
+
+}
+
 pub async fn listar_todos_equipamentos (
     State(state): State<AppState>,
 ) -> ApiResponse<Vec<Equipamento>> {
