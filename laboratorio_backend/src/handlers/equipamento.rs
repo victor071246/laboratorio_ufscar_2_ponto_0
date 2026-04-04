@@ -44,7 +44,26 @@ pub async fn buscar_por_uuid(
             data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
             ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
             FROM equipamento WHERE uuid = $1"#,
+            uuid
     )
+    .fetch_optional(&state.db)
+    .await;
+
+    match equipamento {
+        Ok(Some(e)) => ApiResponse(
+            StatusCode::OK,
+            DinamicResponse::success("Equipamento encontrado", e),
+        ),
+        Ok(None) => ApiResponse(
+            StatusCode::NOT_FOUND,
+            DinamicResponse::error("Equipamento não encontrado"),
+        )
+        ,
+        Err(_) => ApiResponse(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DinamicResponse::error("Erro ao buscar equipamento")
+        )
+    }
 }
 
 pub async fn deletar (

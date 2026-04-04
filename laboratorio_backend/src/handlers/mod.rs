@@ -1,2 +1,2 @@
-mod auth;
-mod equipamento;
+pub mod auth;
+pub mod equipamento;
