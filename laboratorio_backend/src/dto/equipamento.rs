@@ -39,3 +39,10 @@ pub struct EquipamentoResponse {
     pub altura_cm: Option<Decimal>,
     pub profundidade_cm: Option<Decimal>,
 }
+
+#[derive(Debug, Deserialize)]
+pub struct FiltroEquipamentoDto {
+    pub nome: Option<String>,
+    pub descricao: Option<String>,
+    pub estado: Option<EstadoEquipamento>
+}

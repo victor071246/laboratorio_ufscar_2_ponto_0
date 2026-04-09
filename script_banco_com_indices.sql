@@ -161,3 +161,18 @@ CREATE INDEX idx_slot_data_hora ON slot(data_hora);
 CREATE INDEX idx_equipamento_estado ON equipamento(estado);
 CREATE INDEX idx_log_equip_data ON log_equipamento(alterado_em);
 CREATE INDEX idx_log_user_data ON log_usuario(alterado_em);
+
+ALTER TABLE agendamento
+ADD COLUMN usuario_id int NOT NULL REFERENCES usuario(id) ON DELETE CASCADE,
+ADD COLUMN data_inicio timestamptz NOT NULL,
+ADD COLUMN data_fim timestamptz NOT NULL;
+
+DROP TABLE slot;
+
+CREATE INDEX idx_agendamento_usuario ON agendamento(usuario_id);
+CREATE INDEX idx_agendamento_horario ON agendamento(equipamento_id, data_inicio, data_fim);
+
+ALTER TABLE agendamento
+ALTER COLUMN usuario_id SET NOT NULL,
+ALTER COLUMN data_inicio SET NOT NULL,
+ALTER COLUMN data_fim SET NOT NULL;

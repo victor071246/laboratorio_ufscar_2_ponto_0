@@ -1,11 +1,11 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, State, Query},
     http::StatusCode,
     Json,
 };
 use uuid::Uuid;
 
-use crate::{dto::equipamento::{AtualizarEquipamentoDto, CriarEquipamentoDto}, response::DinamicResponse};
+use crate::{dto::equipamento::{AtualizarEquipamentoDto, CriarEquipamentoDto, FiltroEquipamentoDto}, response::DinamicResponse};
 use crate::models::equipamento::{Equipamento, EstadoEquipamento};
 use crate::response::ApiResponse;
 use crate::AppState;
@@ -175,5 +175,33 @@ pub async fn deletar (
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error("Erro ao deletar equipamento"),
         )
+    }
+}
+
+pub async fn buscar(
+    State(state): State<AppState>,
+    Query(filtro): Query<FiltroEquipamentoDto>,
+) -> ApiResponse<Vec<Equipamento>> {
+    let equipamentos = sqlx::query_as!(
+        Equipamento,
+        r#"SELECT id, uuid, nome, descricao,
+        estado as "estado: EstadoEquipamento",
+        data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+        ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
+        FROM equipamento
+        WHERE ($1::text IS NULL OR nome ILIKE '%' || $1 || '%')
+        AND ($2::text IS NULL OR descricao ILIKE '%' || $2 || '%')
+        AND ($3::estado_equipamento IS NULL OR estado = $3)
+        ORDER BY nome"#,
+        filtro.nome,
+        filtro.descricao,
+        filtro.estado as Option<EstadoEquipamento>
+    )
+    .fetch_all(&state.db)
+    .await;
+
+    match equipamentos {
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos encontrados", lista)),
+        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar equipamentos")),
     }
 }

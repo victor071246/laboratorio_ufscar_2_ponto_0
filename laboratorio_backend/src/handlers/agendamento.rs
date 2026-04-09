@@ -1,11 +1,9 @@
 use axum::{
-    extract::{Path, State},
-    http::StatusCode,
-    Json,
+    Json, extract::{Path, Query, State}, http::StatusCode
 };
 use uuid::{self, Uuid};
 
-use crate::dto::agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto};
+use crate::dto::agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto, FiltroAgendamentoDto};
 use crate::models::agendamento::{Agendamento, StatusAgendamento};
 use crate::response::{ApiResponse, DinamicResponse};
 use crate::AppState;
@@ -151,6 +149,63 @@ pub async fn atualizar(
     match agendamento {
         Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento criado com sucesso", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Nenhum agendamento encontrado")),
+        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
+    }
+}
+
+pub async fn buscar_com_filtro(
+    State(state): State<AppState>,
+    Query(filtro): Query<FiltroAgendamentoDto>,
+) -> ApiResponse<Vec<Agendamento>> {
+    let agendamentos = sqlx::query_as!(
+        Agendamento,
+        r#"SELECT id, uuid, equipamento_id, usuario_id,
+            status as "status: StatusAgendamento",
+            data_inicio, data_fim, notificar_email, notificar_whatsapp,
+            observacao, criado_em
+            FROM agendamento
+            WHERE ($1::int IS NULL OR equipamento_id = $1)
+            AND ($2::int IS NULL or usuario_id = $2)
+            AND ($3::status_agendamento IS NULL OR status = $3)
+            AND ($4::timestamptz IS NULL OR data_inicio >= $4)
+            AND ($5::timestamptz IS NULL OR data_inicio <= $5)
+            AND ($6::text IS NULL OR observacao ILIKE '%' || $6 || '%')
+            ORDER BY data_inicio DESC"#,
+        filtro.equipamento_id,
+        filtro.usuario_id,
+        filtro.status as Option<StatusAgendamento>,
+        filtro.data_inicio_min,
+        filtro.data_inicio_max,
+        filtro.observacao
+    )
+    .fetch_all(&state.db)
+    .await;
+
+    match agendamentos {
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento encontrados", lista)),
+        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar agendamento")),
+    }
+}
+
+pub async fn cancelar(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>
+) -> ApiResponse<Agendamento> {
+    let agendamento = sqlx::query_as!(
+        Agendamento,
+        r#"UPDATE agendamento SET status ='cancelado'
+            WHERE uuid = $1 AND status NOT IN ('concluido', 'cancelado')
+            RETURNING id, uuid, equipamento_id, usuario_id,
+            status as "status: StatusAgendamento",
+            data_inicio, data_fim, notificar_email, notificar_whatsapp,
+            observacao, criado_em"#,
+        uuid
+    ).fetch_optional(&state.db)
+    .await;
+
+    match agendamento {
+        Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento cancelado", a)),
+        Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Agendamento não encontrado")),
         Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
     }
 }

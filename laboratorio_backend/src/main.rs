@@ -7,7 +7,7 @@ mod services;
 mod routes;
 mod handlers;
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, os::linux::raw::stat};
 use axum::Router;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -43,7 +43,7 @@ async fn main() {
         config: config.clone(),
     };
 
-    let app = Router::new()
+    let app = routes::criar_rotas()
         .layer(TraceLayer::new_for_http())
         .with_state(state);
 

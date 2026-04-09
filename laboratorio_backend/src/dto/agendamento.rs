@@ -22,3 +22,13 @@ pub struct AtualizarAgendamentoDto {
     pub notificar_whatsapp: Option<bool>,
     pub observacao: Option<String>
 }
+
+#[derive(Debug, Deserialize)]
+pub struct FiltroAgendamentoDto {
+    pub equipamento_id: Option<i32>,
+    pub usuario_id: Option<i32>,
+    pub status: Option<StatusAgendamento>,
+    pub data_inicio_min: Option<DateTime<Utc>>,
+    pub data_inicio_max: Option<DateTime<Utc>>,
+    pub observacao: Option<String>,
+}
