@@ -7,7 +7,7 @@ mod services;
 mod routes;
 mod handlers;
 
-use std::{net::SocketAddr, os::linux::raw::stat};
+use std::{net::SocketAddr};
 use axum::Router;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};

@@ -1,0 +1,31 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: usuario_lab
+      POSTGRES_PASSWORD: Lab@2802prod
+      POSTGRES_DB: lab_ufscar
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./laboratorio_backend/
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      DATABASE_URL: postgres://usuario_lab:Lab2802prod@db:5432/lab_ufscar
+      JWT_SECRET: Segredo@TokenJWT_!@12314
+      JWT_EXPIRATION_HOURS: 8
+      HOST: 0.0.0.0
+      PORT: 3000
+      RUST_LOG: info
+    depends_on:
+      - db
+
+  volumes:
+    pgdata:

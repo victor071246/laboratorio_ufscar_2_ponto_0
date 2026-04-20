@@ -206,6 +206,9 @@ pub async fn cancelar(
     match agendamento {
         Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento cancelado", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Agendamento não encontrado")),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
+        Err(e) => {
+            eprintln!("Erro ao criar agendamento: {:?}", e);
+            ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
+        }
     }
 }
