@@ -1,13 +1,11 @@
 use bcrypt::{hash, verify, DEFAULT_COST};
 use jsonwebtoken::{encode, EncodingKey, Header};
 use serde::{Deserialize, Serialize};
-use sqlx::PgPool;
 use chrono::{Utc, Duration};
 
-use crate::models::usuario::{PapelUsuario, Usuario};
-use crate::dto::usuario::{CriarUsuarioDto, LoginDto};
+use crate::models::usuario::{PapelUsuario};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub sub: String, // uuid - identificador público
     pub id: i32, // id inteiro - uso interno nas queries

@@ -6,6 +6,7 @@ mod dto;
 mod services;
 mod routes;
 mod handlers;
+mod middlewares;
 
 use std::{net::SocketAddr};
 use axum::Router;

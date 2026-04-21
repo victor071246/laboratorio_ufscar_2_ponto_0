@@ -1,5 +1,5 @@
 use axum::{extract::State, http::StatusCode, Json};
-
+use axum_extra::extract::cookie::{Cookie, CookieJar};
 use crate::dto::usuario::{CriarUsuarioDto, LoginDto};
 use crate::models::usuario::PapelUsuario;
 use crate::response::{ApiResponse, DinamicResponse};
@@ -13,35 +13,36 @@ pub struct LoginResponse {
 
 pub async fn login(
     State(state): State<AppState>,
-    Json(payload): Json<LoginDto>,
-) -> ApiResponse<LoginResponse> {
+    jar: CookieJar,
+    Json(payload): Json<LoginDto>
+) -> Result<(CookieJar, ApiResponse<()>), ApiResponse<()>> {
     let usuario = sqlx::query_as!(
         crate::models::usuario::Usuario,
         r#"SELECT id, uuid, nome, email, telefone, senha_hash,
-        papel as "papel: PapelUsuario", ativo, criado_em, criado_por
-        FROM usuario WHERE email = $1 AND ativo = true"#,
-        payload.email
+            papel as "papel: PapelUsuario", ativo, criado_em, criado_por
+            FROM usuario WHERE email = $1 AND ativo = true"#,
+            payload.email
     )
     .fetch_optional(&state.db)
     .await;
 
     let usuario = match usuario {
         Ok(Some(u)) => u,
-        Ok(None) => return ApiResponse(
+        Ok(None) => return Err(ApiResponse(
             StatusCode::UNAUTHORIZED,
             DinamicResponse::error("Credenciais inválidas"),
-        ),
-        Err(_) => return ApiResponse(
+        )),
+        Err(_) => return Err(ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error("Erro interno"),
-        )
+        ))
     };
 
     if !verificar_senha(&payload.senha, &usuario.senha_hash) {
-        return ApiResponse(
+        return Err(ApiResponse(
             StatusCode::UNAUTHORIZED,
             DinamicResponse::error("Credenciais inválidas"),
-        );
+        ))
     }
 
     let token = gerar_jwt(
@@ -53,24 +54,29 @@ pub async fn login(
         state.config.jwt_expiration_hours,
     );
 
-    ApiResponse(
-        StatusCode::OK,
-        DinamicResponse::success("Login realizado", LoginResponse { token }),
-    )
+    let cookie = Cookie::build(("token", token))
+        .http_only(true)
+        .path("/")
+        .build();
+
+    Ok((
+        jar.add(cookie),
+        ApiResponse(StatusCode::OK, DinamicResponse::success("Login realizado", ()))
+    ))
 }
 
 pub async fn registrar(
     State(state): State<AppState>,
     Json(payload): Json<CriarUsuarioDto>,
 ) -> ApiResponse<()> {
-    let existe = sqlx::query_scalar!(
+    let existe_email = sqlx::query_scalar!(
         "SELECT EXISTS(SELECT 1 FROM usuario WHERE email = $1)",
         payload.email
     )
     .fetch_one(&state.db)
     .await;
 
-    match existe {
+    match existe_email {
         Ok(Some(true)) => return ApiResponse(
             StatusCode::CONFLICT,
             DinamicResponse::error("Email já cadastrado"),

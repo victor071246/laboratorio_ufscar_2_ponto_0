@@ -18,7 +18,7 @@ services:
     ports:
       - '3000:3000'
     environment:
-      DATABASE_URL: postgres://usuario_lab:Lab2802prod@db:5432/lab_ufscar
+      DATABASE_URL: postgres://usuario_lab:Lab@2802prod@db:5432/lab_ufscar
       JWT_SECRET: Segredo@TokenJWT_!@12314
       JWT_EXPIRATION_HOURS: 8
       HOST: 0.0.0.0
