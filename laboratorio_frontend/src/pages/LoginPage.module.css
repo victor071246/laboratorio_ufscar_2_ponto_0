@@ -1,0 +1,42 @@
+.loginPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100dvw;
+  height: 100dvh;
+}
+
+.loginFormDiv {
+  background-color: blueviolet;
+  width: 50dvw;
+  height: 60dvh;
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 60%;
+  width: 100%;
+  justify-content: center;
+}
+
+.loginBtn {
+  width: 20dvw;
+  background-color: beige;
+  height: 5dvh;
+}
+
+.loginInput {
+  border-radius: 15px;
+  width: 20dvw;
+  height: 3dvh;
+}
+
+.floatingLabel {
+  position: absolute;
+}
