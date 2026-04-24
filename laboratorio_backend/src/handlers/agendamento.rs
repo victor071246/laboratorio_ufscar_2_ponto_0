@@ -24,7 +24,7 @@ pub async fn listar(
 
     match agendamentos {
         Ok(lista) =>ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamentos listados", lista)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar agendamentos"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar agendamentos {}", e)))
     }
 
 }
@@ -47,7 +47,7 @@ pub async fn buscar_por_uuid(
     match agendamento {
         Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento encontrado", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Agendamento não encontrado")),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar agendamento"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar agendamento {e}")))
     }
 }
 
@@ -65,7 +65,7 @@ pub async fn criar(
     let equipamento_id = match equipamento {
         Ok(Some(id)) => id,
         Ok(None) => return ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Equipamento não encontrado")),
-        Err(_) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar equipamento")),
+        Err(e) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamento {e}"))),
     };
 
     let conflito = sqlx::query_scalar!(
@@ -83,7 +83,7 @@ pub async fn criar(
 
     match conflito {
         Ok(true) => return ApiResponse(StatusCode::CONFLICT, DinamicResponse::error("Horário indisponível")),
-        Err(_) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao validar horário")),
+        Err(e) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao validar horário {e}"))),
         _ => {}
     }
 
@@ -111,7 +111,7 @@ pub async fn criar(
 
     match agendamento {
         Ok(a) => ApiResponse(StatusCode::CREATED, DinamicResponse::success("Agendamento criado com sucesso", a)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao criar o agendamento"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao criar agendamento {e}")))
     }
 
 }
@@ -149,7 +149,7 @@ pub async fn atualizar(
     match agendamento {
         Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento criado com sucesso", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Nenhum agendamento encontrado")),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao atualizar o agendamento {e}")))
     }
 }
 
@@ -183,7 +183,7 @@ pub async fn buscar_com_filtro(
 
     match agendamentos {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento encontrados", lista)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar agendamento")),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar agendamento {e}"))),
     }
 }
 

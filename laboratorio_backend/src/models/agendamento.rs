@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, PartialEq)]
 #[sqlx(type_name = "status_agendamento", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum StatusAgendamento {
     Pendente,
     Confirmado,

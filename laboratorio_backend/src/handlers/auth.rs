@@ -81,9 +81,9 @@ pub async fn registrar(
             StatusCode::CONFLICT,
             DinamicResponse::error("Email já cadastrado"),
         ),
-        Err(_) => return ApiResponse(
+        Err(e) => return ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro interno"),
+            DinamicResponse::error(format!("Erro interno: {}", e)),
         ),
         _ => {}
     };
@@ -109,9 +109,9 @@ pub async fn registrar(
             StatusCode::CREATED,
             DinamicResponse::success("Usuário criado", ()),
         ),
-        Err(_) => ApiResponse(
+        Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro ao criar usuário"),
+            DinamicResponse::error(format!("Erro ao criar usuário: {}", e)),
         )
     }
 

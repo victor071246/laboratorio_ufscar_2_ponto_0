@@ -6,6 +6,7 @@ use rust_decimal::Decimal;
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, PartialEq)]
 #[sqlx(type_name = "estado_equipamento", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum EstadoEquipamento {
     Disponivel,
     EmManutencao,

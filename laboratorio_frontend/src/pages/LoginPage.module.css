@@ -7,9 +7,9 @@
 }
 
 .loginFormDiv {
-  background-color: blueviolet;
-  width: 50dvw;
-  height: 60dvh;
+  background-color: rgb(31, 182, 247);
+  width: 80dvw;
+  height: 50dvh;
   border-radius: 20px;
   display: flex;
   justify-content: center;
@@ -26,17 +26,30 @@
 }
 
 .loginBtn {
-  width: 20dvw;
+  width: 35dvw;
   background-color: beige;
-  height: 5dvh;
+  height: 15dvh;
+  min-height: 5dvh;
+  border-radius: 5px;
 }
 
 .loginInput {
-  border-radius: 15px;
-  width: 20dvw;
+  border-radius: 5px;
+  width: 50dvw;
   height: 3dvh;
 }
 
 .floatingLabel {
   position: absolute;
+}
+
+.lgba_logo {
+  width: 50dvw;
+}
+
+.inputs {
+  padding: 3dvh;
+  gap: 1dvw;
+  display: flex;
+  flex-direction: column;
 }

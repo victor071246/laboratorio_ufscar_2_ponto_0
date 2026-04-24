@@ -27,7 +27,7 @@ pub async fn listar(
 
     match ocorrencias {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências listadas", lista)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar ocorrências"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências {e}")))
     }
 }
 
@@ -50,7 +50,7 @@ pub async fn buscar_por_uuid(
     match ocorrencia {
         Ok(Some(o)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrência encontrada", o)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Ocorrência não encontrada")),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar ocorrência"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrência {e}")))
     }
 }
 
@@ -77,7 +77,7 @@ pub async fn buscar(
 
     match ocorrencias {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências encontradas, ", lista)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar ocorrências"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências {e}")))
     }
 }
 
@@ -95,7 +95,7 @@ pub async fn criar(
     let (equipamento_id, estado_anterior) = match equipamento {
         Ok(Some(e)) => (e.id, e.estado),
         Ok(None) => return ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Equipamento não encontrado")),
-        Err(_) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar equipamento")),
+        Err(e) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamento {e}"))),
     };
 
     // TODO: registrado_por vem do JWT
@@ -119,7 +119,7 @@ pub async fn criar(
 
     match ocorrencia{
         Ok(o) => ApiResponse(StatusCode::CREATED, DinamicResponse::success("Ocorrência criada", o)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao criar ocorrência"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao criar ocorrência {e}")))
     }
 
 }
@@ -144,7 +144,7 @@ pub async fn resolver(
     match ocorrencia {
         Ok(Some(o)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrência resolvida", o)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Ocorrência não encontrada")),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Ocorrência não encontrada"))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Ocorrência não encontrada {e}")))
 
     }
 }

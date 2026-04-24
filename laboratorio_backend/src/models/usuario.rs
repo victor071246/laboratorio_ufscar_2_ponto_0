@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
 #[sqlx(type_name = "papel_usuario", rename_all = "snake_case")]
+#[serde(rename_all="snake_case")]
 pub enum PapelUsuario {
     Admin,
     Supervisor,

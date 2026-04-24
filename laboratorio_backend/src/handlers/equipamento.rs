@@ -41,9 +41,9 @@ pub async fn criar(
             StatusCode::CREATED,
             DinamicResponse::success("Equipamento criado", e),
         ),
-        Err(_) => ApiResponse(
+        Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro ao criar equipamento"),
+            DinamicResponse::error(format!("Erro ao criar equipamento: {}", e)),
         ),
     }
 }
@@ -115,9 +115,9 @@ pub async fn listar_todos_equipamentos (
             StatusCode::OK,
             DinamicResponse::success("Equipamentos listados", lista),
         ),
-        Err(_) => ApiResponse(
+        Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro ao buscar equipamentos"),
+            DinamicResponse::error(format!("Erro ao buscar equipamentos")),
         )
     }
 }
@@ -147,9 +147,9 @@ pub async fn buscar_por_uuid(
             DinamicResponse::error("Equipamento não encontrado"),
         )
         ,
-        Err(_) => ApiResponse(
+        Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro ao buscar equipamento")
+            DinamicResponse::error(format!("Erro ao buscar equipamento {e}"))
         )
     }
 }
@@ -171,9 +171,9 @@ pub async fn deletar (
             StatusCode::NOT_FOUND,
             DinamicResponse::error("Equipamento não encontrado")
         ),
-        Err(_) => ApiResponse(
+        Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error("Erro ao deletar equipamento"),
+            DinamicResponse::error(format!("Erro ao deletar equipamento")),
         )
     }
 }
@@ -202,6 +202,6 @@ pub async fn buscar(
 
     match equipamentos {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos encontrados", lista)),
-        Err(_) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao buscar equipamentos")),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos {e}"))),
     }
 }

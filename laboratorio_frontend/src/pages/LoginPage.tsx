@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import api from './../services/api';
 import styles from './LoginPage.module.css';
+import logo from '../assets/images/logo.jpg';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -22,6 +23,8 @@ export default function LoginPage() {
       <div className={styles.loginFormDiv}>
         <form className={styles.loginForm} onSubmit={handleLogin}>
           {erro && <p className={styles.floatingLabel}>{erro}</p>}
+
+          <img className={styles.lgba_logo} src={logo}></img>
 
           <div className={styles.inputs}>
             <input

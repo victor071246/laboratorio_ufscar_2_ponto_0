@@ -58,6 +58,11 @@ async fn main() {
         .await
         .expect("Erro ao fazer bind");
 
+    let config = Config::from_env().unwrap_or_else(|e| {
+    eprintln!("ERRO ao carregar config: {}", e);
+    std::process::exit(1);
+    });
+
     axum::serve(listener, app)
         .await
         .expect("Erro ao iniciar o servidor");

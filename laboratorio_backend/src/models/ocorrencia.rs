@@ -7,6 +7,7 @@ use crate::models::equipamento::EstadoEquipamento;
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type, PartialEq)]
 #[sqlx(type_name = "tipo_ocorrencia", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum TipoOcorrencia {
     Manutencao,
     Defeito,

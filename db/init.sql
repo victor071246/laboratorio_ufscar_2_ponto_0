@@ -1,5 +1,3 @@
-CREATE DATABASE lab_ufscar;
-
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 CREATE TYPE papel_usuario AS ENUM(

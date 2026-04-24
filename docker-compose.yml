@@ -19,7 +19,7 @@ services:
       - '3000:3000'
     environment:
       DATABASE_URL: postgres://usuario_lab:Lab@2802prod@db:5432/lab_ufscar
-      JWT_SECRET: Segredo@TokenJWT_!@12314
+      JWT_SECRET: 'Segredo@TokenJWT_!@12314'
       JWT_EXPIRATION_HOURS: 8
       HOST: 0.0.0.0
       PORT: 3000
@@ -27,5 +27,17 @@ services:
     depends_on:
       - db
 
+  nginx:
   volumes:
-    pgdata:
+    - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    - /etc/letsencrypt:/etc/letsencrypt:ro
+  ports:
+    - "80:80"
+    - "443:443"
+  volumes:
+    - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+  depends_on:
+    - backend
+
+volumes:
+  pgdata:

@@ -1,0 +1,41 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, estado as \"estado: EstadoEquipamento\" FROM equipamento WHERE uuid = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "estado: EstadoEquipamento",
+        "type_info": {
+          "Custom": {
+            "name": "estado_equipamento",
+            "kind": {
+              "Enum": [
+                "disponivel",
+                "em_manutencao",
+                "quebrado",
+                "reservado",
+                "desativado"
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "458b880286eaf0b519bfce824c7bc0d9f30f519aaef5d014ab458974b00004d4"
+}

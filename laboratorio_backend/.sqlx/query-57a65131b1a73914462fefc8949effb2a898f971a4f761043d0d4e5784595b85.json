@@ -1,0 +1,95 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE agendamento SET status ='cancelado'\n            WHERE uuid = $1 AND status NOT IN ('concluido', 'cancelado')\n            RETURNING id, uuid, equipamento_id, usuario_id,\n            status as \"status: StatusAgendamento\",\n            data_inicio, data_fim, notificar_email, notificar_whatsapp,\n            observacao, criado_em",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "equipamento_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "usuario_id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "status: StatusAgendamento",
+        "type_info": {
+          "Custom": {
+            "name": "status_agendamento",
+            "kind": {
+              "Enum": [
+                "pendente",
+                "confirmado",
+                "em_uso",
+                "concluido",
+                "cancelado"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "data_inicio",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "data_fim",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "notificar_email",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "notificar_whatsapp",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "observacao",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "criado_em",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "57a65131b1a73914462fefc8949effb2a898f971a4f761043d0d4e5784595b85"
+}
