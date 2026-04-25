@@ -1,0 +1,152 @@
+.page {
+  min-height: 100vh;
+  background: #f4f7f6;
+  color: #14231f;
+  font-family: Inter, Arial, sans-serif;
+  padding: 28px clamp(18px, 5vw, 68px) 56px;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+
+.header a {
+  border: 1px solid #cbd9d4;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #143f38;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.shell {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.intro {
+  padding: 36px;
+  border-radius: 8px;
+  background: #123d36;
+  color: #ffffff;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: #75dec0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.intro h1 {
+  margin: 0 0 18px;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.intro p {
+  margin: 0;
+  color: #d9ece7;
+  line-height: 1.7;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 30px;
+  border: 1px solid #dce7e2;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #334940;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.form input,
+.form select,
+.form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #c9d8d2;
+  border-radius: 6px;
+  padding: 12px 13px;
+  color: #172720;
+  background: #fbfdfc;
+  font: inherit;
+  font-weight: 500;
+}
+
+.form textarea {
+  resize: vertical;
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.fourColumns {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.form button {
+  align-self: flex-start;
+  border: 0;
+  border-radius: 6px;
+  padding: 14px 18px;
+  background: #0f6f5f;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.success,
+.error {
+  margin: 0;
+  border-radius: 6px;
+  padding: 12px 14px;
+  font-weight: 800;
+}
+
+.success {
+  background: #e1f7ec;
+  color: #14683e;
+}
+
+.error {
+  background: #fde7e5;
+  color: #9d2c22;
+}
+
+@media (max-width: 900px) {
+  .shell,
+  .twoColumns,
+  .fourColumns {
+    grid-template-columns: 1fr;
+  }
+}

@@ -11,7 +11,7 @@ export default function LoginPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     try {
-      await api.post('/login', { email, senha });
+      await api.post('/auth/login', { email, senha });
       window.location.href = '/';
     } catch {
       setErro('Credenciais inválidas');
