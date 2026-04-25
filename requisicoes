@@ -1,0 +1,3 @@
+curl -X POST http://35.209.78.24/api/auth/registrar \
+    -H "Content-Type: application/json" \
+    -d '{"nome":"Joao Silva", "email":"joaoemail.com", "senha":"senha123", "papel":"aluno"}'
