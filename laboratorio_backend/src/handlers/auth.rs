@@ -3,12 +3,51 @@ use axum_extra::extract::cookie::{Cookie, CookieJar};
 use crate::dto::usuario::{CriarUsuarioDto, LoginDto};
 use crate::models::usuario::PapelUsuario;
 use crate::response::{ApiResponse, DinamicResponse};
-use crate::services::jwt::{gerar_hash, gerar_jwt, verificar_senha};
+use crate::services::jwt::{gerar_hash, gerar_jwt, verificar_jwt, verificar_senha};
 use crate::AppState;
 
 #[derive(serde::Serialize)]
 pub struct LoginResponse {
     pub token: String,
+}
+
+#[derive(serde::Serialize)]
+pub struct UsuarioLogado {
+    pub nome: String,
+    pub email: String,
+    pub papel: String,
+}
+
+pub async fn logout(jar: CookieJar) -> (CookieJar, ApiResponse<()>) {
+    let jar = jar.remove(Cookie::from("token"));
+    (jar, ApiResponse(StatusCode::OK, DinamicResponse::success("Logout realizado", ())))
+}
+
+pub async fn checarUsuarioLogado(
+    State(state): State<AppState>,
+    jar: CookieJar
+) -> ApiResponse<UsuarioLogado> {
+    let token = match jar.get("token") {
+        Some(c) => c.value().to_string(),
+        None => return ApiResponse(
+            StatusCode::UNAUTHORIZED,
+            DinamicResponse::error("Não autenticado"),
+        )
+    };
+
+    let claims = match verificar_jwt(&token, &state.config.jwt_secret) {
+        Ok(c) => c,
+        Err(_) => return ApiResponse(
+            StatusCode::UNAUTHORIZED,
+            DinamicResponse::error("Token inválido"),
+        )
+    };
+
+    ApiResponse(StatusCode::OK, DinamicResponse::success("Ok", UsuarioLogado {
+        nome: claims.nome,
+        email: claims.email,
+        papel: claims.papel.to_string(),
+    }))
 }
 
 pub async fn login(
@@ -48,7 +87,8 @@ pub async fn login(
     let token = gerar_jwt(
         &usuario.uuid.to_string(),
         usuario.id,
-        &usuario.email,
+        &&usuario.email.to_string(),
+        &usuario.nome,
         usuario.papel.clone(),
         &state.config.jwt_secret,
         state.config.jwt_expiration_hours,

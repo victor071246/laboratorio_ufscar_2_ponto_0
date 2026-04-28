@@ -1,0 +1,41 @@
+.topHeader {
+  margin-top: auto;
+  width: 100dvw;
+  height: 5dvh;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(
+    110deg,
+    rgba(7, 38, 45, 0.88),
+    rgba(13, 75, 65, 0.72)
+  );
+  padding: 3dvw;
+  font-size: 2dvw;
+  color: white;
+  text-align: center;
+}
+
+.back {
+  color: white;
+}
+
+.logout {
+  background: none;
+  display: flex;
+  padding: 3px;
+  width: 10dvw;
+  justify-content: center;
+  font-size: 1rem;
+  border: none;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.welcome {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}

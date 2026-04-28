@@ -1,55 +1,88 @@
 .loginPage {
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100dvw;
-  height: 100dvh;
+  background:
+    linear-gradient(110deg, rgba(7, 38, 45, 0.88), rgba(13, 75, 65, 0.72)),
+    url('../assets/images/Gemini_Generated_Image_8l44ch8l44ch8l44(1).png')
+      center/cover;
 }
 
 .loginFormDiv {
-  background-color: rgb(31, 182, 247);
-  width: 80dvw;
-  height: 50dvh;
-  border-radius: 20px;
+  background: #ffffff;
+  width: min(480px, 35vw);
+  border-radius: 8px;
+  padding: 40px 32px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
+  gap: 24px;
+}
+
+.lgba_logo {
+  width: min(180px, 50%);
+  height: auto;
 }
 
 .loginForm {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 60%;
-  width: 100%;
   justify-content: center;
-}
-
-.loginBtn {
-  width: 35dvw;
-  background-color: beige;
-  height: 15dvh;
-  min-height: 5dvh;
-  border-radius: 5px;
-}
-
-.loginInput {
-  border-radius: 5px;
-  width: 50dvw;
-  height: 3dvh;
-}
-
-.floatingLabel {
-  position: absolute;
-}
-
-.lgba_logo {
-  width: 50dvw;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
 }
 
 .inputs {
-  padding: 3dvh;
-  gap: 1dvw;
   display: flex;
   flex-direction: column;
+  gap: 12px;
+}
+
+.loginInput {
+  width: 25dvw;
+  height: 44px;
+  border-radius: 6px;
+  border: 1px solid #dce7e1;
+  padding: 0 12px;
+  font-size: 1rem;
+  color: #15231d;
+}
+
+.loginBtn {
+  width: 25dvw;
+  height: 44px;
+  background: linear-gradient(
+    110deg,
+    rgba(7, 38, 45, 0.88),
+    rgba(13, 75, 65, 0.72)
+  );
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+}
+
+.loginBtn:hover {
+  opacity: 0.85;
+}
+
+.loginBtn:active {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.floatingLabel {
+  background-color: rgba(255, 0, 0, 0.406);
+  border-radius: 5px;
+  color: red;
+  display: hidden;
+  padding: 3px;
 }

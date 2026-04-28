@@ -25,3 +25,13 @@ pub struct Usuario {
     pub criado_em: DateTime<Utc>,
     pub criado_por: Option<i32>
 }
+
+impl std::fmt::Display for PapelUsuario {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PapelUsuario::Aluno => write!(f, "aluno"),
+            PapelUsuario::Supervisor => write!(f, "supervisor"),
+            PapelUsuario::Admin => write!(f, "admin"),
+        }
+    }
+}

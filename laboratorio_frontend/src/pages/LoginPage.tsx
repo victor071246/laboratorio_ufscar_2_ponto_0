@@ -22,10 +22,8 @@ export default function LoginPage() {
     <div className={styles.loginPage}>
       <div className={styles.loginFormDiv}>
         <form className={styles.loginForm} onSubmit={handleLogin}>
-          {erro && <p className={styles.floatingLabel}>{erro}</p>}
-
           <img className={styles.lgba_logo} src={logo}></img>
-
+          {erro && <p className={styles.floatingLabel}>{erro}</p>}
           <div className={styles.inputs}>
             <input
               className={styles.loginInput}
@@ -42,6 +40,7 @@ export default function LoginPage() {
               onChange={(e) => setSenha(e.target.value)}
             ></input>
           </div>
+
           <button className={styles.loginBtn} type="submit">
             Entrar
           </button>

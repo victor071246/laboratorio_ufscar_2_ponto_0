@@ -11,12 +11,18 @@ importers:
       axios:
         specifier: ^1.15.2
         version: 1.15.2
+      nprogress:
+        specifier: ^0.2.0
+        version: 0.2.0
       react:
         specifier: ^19.2.5
         version: 19.2.5
       react-dom:
         specifier: ^19.2.5
         version: 19.2.5(react@19.2.5)
+      react-icons:
+        specifier: ^5.6.0
+        version: 5.6.0(react@19.2.5)
       react-router-dom:
         specifier: ^7.14.2
         version: 7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
@@ -27,6 +33,9 @@ importers:
       '@types/node':
         specifier: ^24.12.2
         version: 24.12.2
+      '@types/nprogress':
+        specifier: ^0.2.3
+        version: 0.2.3
       '@types/react':
         specifier: ^19.2.14
         version: 19.2.14
@@ -331,6 +340,9 @@ packages:
 
   '@types/node@24.12.2':
     resolution: {integrity: sha512-A1sre26ke7HDIuY/M23nd9gfB+nrmhtYyMINbjI1zHJxYteKR6qSMX56FsmjMcDb3SMcjJg5BiRRgOCC/yBD0g==}
+
+  '@types/nprogress@0.2.3':
+    resolution: {integrity: sha512-k7kRA033QNtC+gLc4VPlfnue58CM1iQLgn1IMAU8VPHGOj7oIHPp9UlhedEnD/Gl8evoCjwkZjlBORtZ3JByUA==}
 
   '@types/react-dom@19.2.3':
     resolution: {integrity: sha512-jp2L/eY6fn+KgVVQAOqYItbF0VY/YApe5Mz2F0aykSO8gx31bYCZyvSeYxCHKvzHG5eZjc+zyaS5BrBWya2+kQ==}
@@ -896,6 +908,9 @@ packages:
   node-releases@2.0.37:
     resolution: {integrity: sha512-1h5gKZCF+pO/o3Iqt5Jp7wc9rH3eJJ0+nh/CIoiRwjRxde/hAHyLPXYN4V3CqKAbiZPSeJFSWHmJsbkicta0Eg==}
 
+  nprogress@0.2.0:
+    resolution: {integrity: sha512-I19aIingLgR1fmhftnbWWO3dXc0hSxqHQHQb3H8m+K3TnEn/iSeTZZOyvKXWqQESMwuUVnatlCnZdLBZZt2VSA==}
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -947,6 +962,11 @@ packages:
     resolution: {integrity: sha512-J5bAZz+DXMMwW/wV3xzKke59Af6CHY7G4uYLN1OvBcKEsWOs4pQExj86BBKamxl/Ik5bx9whOrvBlSDfWzgSag==}
     peerDependencies:
       react: ^19.2.5
+
+  react-icons@5.6.0:
+    resolution: {integrity: sha512-RH93p5ki6LfOiIt0UtDyNg/cee+HLVR6cHHtW3wALfo+eOHTp8RnU2kRkI6E+H19zMIs03DyxUG/GfZMOGvmiA==}
+    peerDependencies:
+      react: '*'
 
   react-router-dom@7.14.2:
     resolution: {integrity: sha512-YZcM5ES8jJSM+KrJ9BdvHHqlnGTg5tH3sC5ChFRj4inosKctdyzBDhOyyHdGk597q2OT6NTrCA1OvB/YDwfekQ==}
@@ -1397,6 +1417,8 @@ snapshots:
   '@types/node@24.12.2':
     dependencies:
       undici-types: 7.16.0
+
+  '@types/nprogress@0.2.3': {}
 
   '@types/react-dom@19.2.3(@types/react@19.2.14)':
     dependencies:
@@ -1939,6 +1961,8 @@ snapshots:
 
   node-releases@2.0.37: {}
 
+  nprogress@0.2.0: {}
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -1984,6 +2008,10 @@ snapshots:
     dependencies:
       react: 19.2.5
       scheduler: 0.27.0
+
+  react-icons@5.6.0(react@19.2.5):
+    dependencies:
+      react: 19.2.5
 
   react-router-dom@7.14.2(react-dom@19.2.5(react@19.2.5))(react@19.2.5):
     dependencies:
