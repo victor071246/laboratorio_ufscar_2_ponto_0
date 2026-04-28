@@ -1,0 +1,46 @@
+/* PanelPage.module.css */
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 2rem;
+  padding-bottom: 0;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  background: linear-gradient(
+    110deg,
+    rgba(7, 38, 45, 0.88),
+    rgba(13, 75, 65, 0.72)
+  );
+  color: #fbfaf8;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 2rem;
+  font-weight: 500;
+  transition: background-color 0.2s;
+  width: 40dvw;
+  height: 32dvh;
+  gap: 0px;
+  margin: auto;
+}
+
+.card:hover {
+  background-color: #3a3a3a;
+}

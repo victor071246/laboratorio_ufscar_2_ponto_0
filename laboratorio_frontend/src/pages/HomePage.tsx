@@ -24,11 +24,11 @@ export default function HomePage() {
         <nav className={styles.nav}>
           <img className={styles.logo} src={logo} alt="Logo LGBA UFSCar" />
           <div className={styles.navActions}>
-            <Link className={styles.secondaryLink} to="/cadastro/usuarios">
-              Cadastrar usuario
+            <Link className={styles.loginButton} to="/painel/">
+              Acesse o sistema
             </Link>
-            <Link className={styles.secondaryLink} to="/cadastro/equipamentos">
-              Cadastrar equipamento
+            <Link className={styles.loginButton} to="/cadastro/equipamentos">
+              Sobre nós
             </Link>
             <Link className={styles.loginButton} to="/login">
               Login
@@ -38,10 +38,13 @@ export default function HomePage() {
 
         <section className={styles.heroContent}>
           <p className={styles.eyebrow}>Laboratorio de Quimica - UFSCar</p>
-          <h1>Gestao de equipamentos para ensino, pesquisa e rotina analitica.</h1>
+          <h1>
+            Gestao de equipamentos para ensino, pesquisa e rotina analitica.
+          </h1>
           <p className={styles.heroText}>
-            Uma central para acompanhar instrumentos, apoiar agendamentos futuros e
-            manter o laboratorio mais organizado para alunos, tecnicos e docentes.
+            Uma central para acompanhar instrumentos, apoiar agendamentos
+            futuros e manter o laboratorio mais organizado para alunos, tecnicos
+            e docentes.
           </p>
           <div className={styles.heroActions}>
             <Link className={styles.primaryButton} to="/login">
@@ -61,8 +64,9 @@ export default function HomePage() {
         </div>
         <p>
           Em ambientes de quimica, a disponibilidade de equipamentos depende de
-          preparo, limpeza, calibracao e manutencao. Esta plataforma organiza essas
-          informacoes para reduzir conflitos de uso e preservar a qualidade dos ensaios.
+          preparo, limpeza, calibracao e manutencao. Esta plataforma organiza
+          essas informacoes para reduzir conflitos de uso e preservar a
+          qualidade dos ensaios.
         </p>
       </section>
 
@@ -81,7 +85,7 @@ export default function HomePage() {
           <h2>Base pronta para quem vai implementar agendamentos depois.</h2>
         </div>
         <div className={styles.workflowActions}>
-          <Link to="/cadastro/usuarios">Cadastrar pessoas</Link>
+          <Link to="/cadastro/usuarios">Agendar equipamentos</Link>
           <Link to="/cadastro/equipamentos">Cadastrar equipamentos</Link>
         </div>
       </section>
