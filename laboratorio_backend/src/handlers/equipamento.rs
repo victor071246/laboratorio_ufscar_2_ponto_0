@@ -19,10 +19,10 @@ pub async fn criar(
     let equipamento = sqlx::query_as!(
         Equipamento,
         r#"INSERT INTO equipamento (nome, descricao, estado, data_aquisicao,
-        peso_kg, largura_cm, altura_cm, profundidade_cm)
+        peso_kg, largura_cm, altura_cm, comprimento_cm)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
-        data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+        data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
         ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por"#,
         payload.nome,
         payload.descricao,
@@ -31,7 +31,7 @@ pub async fn criar(
         payload.peso_kg,
         payload.largura_cm,
         payload.altura_cm,
-        payload.profundidade_cm
+        payload.comprimento_cm
     )
     .fetch_one(&state.db)
     .await;
@@ -63,10 +63,10 @@ pub async fn atualizar(
             peso_kg = COALESCE($5, peso_kg),
             largura_cm = COALESCE($6, largura_cm),
             altura_cm = COALESCE($7, altura_cm),
-            profundidade_cm = COALESCE($8, profundidade_cm)
+            comprimento_cm = COALESCE($8, comprimento_cm)
             WHERE uuid = $9
             RETURNING id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
-            data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+            data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
             ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por"#,
             payload.nome,
             payload.descricao,
@@ -75,7 +75,7 @@ pub async fn atualizar(
             payload.peso_kg,
             payload.largura_cm,
             payload.altura_cm,
-            payload.profundidade_cm,
+            payload.comprimento_cm,
             uuid
     )
     .fetch_optional(&state.db)
@@ -95,16 +95,15 @@ pub async fn atualizar(
             DinamicResponse::error(format!("Erro ao atualizar o equipamento: {}", e))
         )
     }
-
 }
 
-pub async fn listar_todos_equipamentos (
+pub async fn listar_todos_equipamentos(
     State(state): State<AppState>,
 ) -> ApiResponse<Vec<Equipamento>> {
     let equipamentos = sqlx::query_as!(
         Equipamento,
         r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
-        data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+        data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
         ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
         FROM equipamento ORDER BY nome"#
     ).fetch_all(&state.db)
@@ -129,7 +128,7 @@ pub async fn buscar_por_uuid(
     let equipamento = sqlx::query_as!(
         Equipamento,
         r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
-            data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+            data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
             ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
             FROM equipamento WHERE uuid = $1"#,
             uuid
@@ -145,8 +144,7 @@ pub async fn buscar_por_uuid(
         Ok(None) => ApiResponse(
             StatusCode::NOT_FOUND,
             DinamicResponse::error("Equipamento não encontrado"),
-        )
-        ,
+        ),
         Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error(format!("Erro ao buscar equipamento {e}"))
@@ -154,7 +152,7 @@ pub async fn buscar_por_uuid(
     }
 }
 
-pub async fn deletar (
+pub async fn deletar(
     State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> ApiResponse<()> {
@@ -163,7 +161,7 @@ pub async fn deletar (
     .await;
 
     match result {
-        Ok(r) if r.rows_affected() > 0 => ApiResponse (
+        Ok(r) if r.rows_affected() > 0 => ApiResponse(
             StatusCode::OK,
             DinamicResponse::success("Equipamento deletado", ()),
         ),
@@ -186,7 +184,7 @@ pub async fn buscar(
         Equipamento,
         r#"SELECT id, uuid, nome, descricao,
         estado as "estado: EstadoEquipamento",
-        data_aquisicao, peso_kg, largura_cm, altura_cm, profundidade_cm,
+        data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
         ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
         FROM equipamento
         WHERE ($1::text IS NULL OR nome ILIKE '%' || $1 || '%')

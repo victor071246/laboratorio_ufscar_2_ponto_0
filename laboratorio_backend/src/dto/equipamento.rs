@@ -12,7 +12,7 @@ pub struct CriarEquipamentoDto {
     pub peso_kg: Option<Decimal>,
     pub largura_cm: Option<Decimal>,
     pub altura_cm: Option<Decimal>,
-    pub profundidade_cm: Option<Decimal>,
+    pub comprimento_cm: Option<Decimal>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -24,7 +24,7 @@ pub struct AtualizarEquipamentoDto {
     pub peso_kg: Option<Decimal>,
     pub largura_cm: Option<Decimal>,
     pub altura_cm: Option<Decimal>,
-    pub profundidade_cm: Option<Decimal>
+    pub comprimento_cm: Option<Decimal>,
 }
 
 #[derive(Debug, Serialize)]
@@ -36,13 +36,20 @@ pub struct EquipamentoResponse {
     pub estado: EstadoEquipamento,
     pub data_aquisicao: Option<NaiveDate>,
     pub peso_kg: Option<Decimal>,
+    pub largura_cm: Option<Decimal>,
     pub altura_cm: Option<Decimal>,
-    pub profundidade_cm: Option<Decimal>,
+    pub comprimento_cm: Option<Decimal>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct FiltroEquipamentoDto {
+    pub id: Option<i32>,
     pub nome: Option<String>,
     pub descricao: Option<String>,
-    pub estado: Option<EstadoEquipamento>
+    pub estado: Option<EstadoEquipamento>,
+    pub data_aquisicao: Option<NaiveDate>,
+    pub peso_kg: Option<Decimal>,
+    pub largura_cm: Option<Decimal>,
+    pub altura_cm: Option<Decimal>,
+    pub comprimento_cm: Option<Decimal>,
 }
