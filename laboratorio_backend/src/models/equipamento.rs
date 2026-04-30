@@ -26,7 +26,7 @@ pub struct Equipamento {
     pub altura_cm: Option<Decimal>,
     pub peso_kg: Option<Decimal>,
     pub largura_cm: Option<Decimal>,
-    pub profundidade_cm: Option<Decimal>,
+    pub comprimento_cm: Option<Decimal>,
     pub ultima_vez_disponivel: Option<DateTime<Utc>>,
     pub ultima_vez_em_manutencao: Option<DateTime<Utc>>,
     pub criado_em: DateTime<Utc>,
