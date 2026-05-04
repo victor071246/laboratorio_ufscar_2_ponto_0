@@ -5,7 +5,7 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::{dto::equipamento::{AtualizarEquipamentoDto, CriarEquipamentoDto, FiltroEquipamentoDto}, response::DinamicResponse};
+use crate::{dto::equipamento::{self, AtualizarEquipamentoDto, CriarEquipamentoDto, FiltroEquipamentoDto}, response::DinamicResponse};
 use crate::models::equipamento::{Equipamento, EstadoEquipamento};
 use crate::response::ApiResponse;
 use crate::AppState;
@@ -117,6 +117,27 @@ pub async fn listar_todos_equipamentos(
         Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error(format!("Erro ao buscar equipamentos")),
+        )
+    }
+}
+
+pub async fn listar_colunas_tabela(
+    State(state): State<AppState>,
+) -> ApiResponse<Vec<String>> {
+    let colunas = sqlx::query_scalar!(
+        "SELECT column_name FROM information_schema.columns WHERE table_name = 'equipamento'"
+    )
+    .fetch_all(&state.db)
+    .await;
+
+    match colunas {
+        Ok(lista) => ApiResponse(
+            StatusCode::OK,
+            DinamicResponse::success("Colunas listadas", lista),
+        ),
+        Err(e) => ApiResponse(
+            StatusCode::INTERNAL_SERVER_ERROR,
+            DinamicResponse::error(format!("Erro ao listar colunas: {}", e))
         )
     }
 }

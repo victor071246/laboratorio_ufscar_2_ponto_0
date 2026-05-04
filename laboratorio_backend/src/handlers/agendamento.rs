@@ -29,6 +29,22 @@ pub async fn listar(
 
 }
 
+pub async fn listar_campos_agendamento(
+    State(state): State<AppState>
+) -> ApiResponse<Vec<String>> {
+    let colunas = sqlx::query!(
+        "SELECT column_name FROM information_schema.columns WHERE table = 'agendamento'"
+    )
+    .fetch_all(&state.db)
+    .await
+    .map(|rows| rows.into_iter().map(|r| r.column_name.unwrap_or_default()).collect::<Vec<String>>());
+
+    match colunas {
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Colunas listadas", lista)),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao listar colunas: {}", e)))
+    }
+}
+
 pub async fn buscar_por_uuid(
     State(state): State<AppState>,
     Path(uuid): Path<Uuid>

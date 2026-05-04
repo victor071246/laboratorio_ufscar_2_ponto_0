@@ -21,3 +21,6 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 thiserror = "1"
 axum-extra = {version= "0.9", features = ["cookie"]}
+
+[env]
+SQLX_OFFLINE = "true"
