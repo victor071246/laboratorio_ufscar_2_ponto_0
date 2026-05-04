@@ -5,7 +5,7 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::dto::ocorrencia::{CriarOcorrenciaDto, FiltroOcorrenciaDto};
+use crate::dto::{ocorrencia::{CriarOcorrenciaDto, FiltroOcorrenciaDto}, filtro::FiltroDto};
 use crate::models::ocorrencia::{Ocorrencia, TipoOcorrencia};
 use crate::models::equipamento::EstadoEquipamento;
 use crate::response::{ApiResponse, DinamicResponse};
@@ -44,6 +44,37 @@ pub async fn listar_campos_ocorrencia(
     match colunas {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Colunas listadas", lista)),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao listar colunas: {}"^, e)))
+    }
+}
+
+pub async fn busca_com_filtro(
+    State(state): State<AppState>,
+    Query(filtro): Query<FiltroDto>
+) -> ApiResponse<Vec<Ocorrencia>> {
+    let operador = match filtro.operador_as_str() {
+        "gt" | ">" => ">",
+        "lt" | "<" => "<",
+        "gte" | ">=" => ">=",
+        "lte" | "<=" => "<=",
+        _ => "=",
+    };
+
+    let slq = format!(
+        r#"SELECT id, uuid, equipamento_id, registrador_por,
+        tipo as "tipo: TipoOcorrencia",
+        descricao, resolvida_em, criado_em
+        FROM ocorrencia WHERE {} {} $1 ORDER BY criado_em DESC"#,
+        filtro.campo, operador
+    );
+
+    let ocorrencias = sqlx::query_as::<_, Ocorrencia>(&sql)
+        .bind(filtro.valor)
+        .fetch_all(&state.db)
+        .await;
+
+    match ocorrencias {
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências encontradas", lista)),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências: {}", e)))
     }
 }
 

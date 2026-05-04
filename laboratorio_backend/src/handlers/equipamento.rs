@@ -5,7 +5,7 @@ use axum::{
 };
 use uuid::Uuid;
 
-use crate::{dto::equipamento::{self, AtualizarEquipamentoDto, CriarEquipamentoDto, FiltroEquipamentoDto}, response::DinamicResponse};
+use crate::{dto::{equipamento::{AtualizarEquipamentoDto, CriarEquipamentoDto, FiltroEquipamentoDto}, filtro::FiltroDto}, response::DinamicResponse};
 use crate::models::equipamento::{Equipamento, EstadoEquipamento};
 use crate::response::ApiResponse;
 use crate::AppState;
@@ -139,6 +139,36 @@ pub async fn listar_colunas_tabela(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error(format!("Erro ao listar colunas: {}", e))
         )
+    }
+}
+
+pub async fn busca_com_filtro( 
+    State(state): State<AppState>,
+    Query(filtro): Query<FiltroDto>
+) -> ApiResponse<Vec<Equipamento>> {
+    let operador = match filtro.operador.as_str() {
+        "gt" | ">" => ">",
+        "lt" | "<" => "<",
+        "gte" | ">=" => ">=",
+        "lte" | "<=" => "<=",
+        _ => "=",
+    };
+
+    let sql = format!(
+    r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
+    data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm, ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
+    FROM equipamento WHERE {} {} $1 ORDER BY nome"#,
+    filtro.campo, operador
+    );
+
+    let equipamentos = sqlx::query_as::<_, Equipamento>(&sql)
+        .bind(filtro.valor)
+        .fetch_all(&state.db)
+        .await;
+
+    match equipamentos {
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equiapmentos encontrados", lista)),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos: {}", e)))
     }
 }
 
