@@ -37,7 +37,7 @@ CREATE TABLE equipamento (
     peso_kg numeric(8,2),
     largura_cm numeric(8,2),
     altura_cm numeric(8,2),
-    profundidade_cm numeric(8,2),
+    comprimento_cm numeric(8,2),
     ultima_vez_disponivel timestamptz,
     ultima_vez_em_manutencao timestamptz,
     criado_em timestamptz NOT NULL DEFAULT now(),
