@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import api from './../services/api';
 import styles from './RegisterPage.module.css';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 type Status = {
   type: 'success' | 'error';
@@ -46,7 +48,10 @@ export default function EquipmentRegisterPage() {
         altura_cm: optionalNumber(form.altura_cm),
         profundidade_cm: optionalNumber(form.profundidade_cm),
       });
-      setStatus({ type: 'success', message: 'Equipamento cadastrado com sucesso.' });
+      setStatus({
+        type: 'success',
+        message: 'Equipamento cadastrado com sucesso.',
+      });
       setForm({
         nome: '',
         descricao: '',
@@ -58,7 +63,10 @@ export default function EquipmentRegisterPage() {
         profundidade_cm: '',
       });
     } catch {
-      setStatus({ type: 'error', message: 'Nao foi possivel cadastrar o equipamento.' });
+      setStatus({
+        type: 'error',
+        message: 'Nao foi possivel cadastrar o equipamento.',
+      });
     } finally {
       setLoading(false);
     }
@@ -66,18 +74,21 @@ export default function EquipmentRegisterPage() {
 
   return (
     <main className={styles.page}>
-      <header className={styles.header}>
+      <Header></Header>
+
+      {/* <header className={styles.header}>
         <Link to="/">Inicio</Link>
         <Link to="/cadastro/usuarios">Cadastrar usuario</Link>
-      </header>
+      </header> */}
 
       <section className={styles.shell}>
         <aside className={styles.intro}>
           <p className={styles.eyebrow}>Patrimonio analitico</p>
           <h1>Cadastro de equipamentos</h1>
           <p>
-            Inclua instrumentos do laboratorio com dimensoes, estado de uso e dados
-            de aquisicao para apoiar controle, manutencao e futuros agendamentos.
+            Inclua instrumentos do laboratorio com dimensoes, estado de uso e
+            dados de aquisicao para apoiar controle, manutencao e futuros
+            agendamentos.
           </p>
         </aside>
 
@@ -105,7 +116,10 @@ export default function EquipmentRegisterPage() {
           <div className={styles.twoColumns}>
             <label>
               Estado
-              <select value={form.estado} onChange={(event) => updateField('estado', event.target.value)}>
+              <select
+                value={form.estado}
+                onChange={(event) => updateField('estado', event.target.value)}
+              >
                 <option value="disponivel">Disponivel</option>
                 <option value="em_manutencao">Em manutencao</option>
                 <option value="quebrado">Quebrado</option>
@@ -119,7 +133,9 @@ export default function EquipmentRegisterPage() {
               <input
                 type="date"
                 value={form.data_aquisicao}
-                onChange={(event) => updateField('data_aquisicao', event.target.value)}
+                onChange={(event) =>
+                  updateField('data_aquisicao', event.target.value)
+                }
               />
             </label>
           </div>
@@ -140,7 +156,9 @@ export default function EquipmentRegisterPage() {
                 type="number"
                 step="0.01"
                 value={form.largura_cm}
-                onChange={(event) => updateField('largura_cm', event.target.value)}
+                onChange={(event) =>
+                  updateField('largura_cm', event.target.value)
+                }
               />
             </label>
             <label>
@@ -149,7 +167,9 @@ export default function EquipmentRegisterPage() {
                 type="number"
                 step="0.01"
                 value={form.altura_cm}
-                onChange={(event) => updateField('altura_cm', event.target.value)}
+                onChange={(event) =>
+                  updateField('altura_cm', event.target.value)
+                }
               />
             </label>
             <label>
@@ -158,7 +178,9 @@ export default function EquipmentRegisterPage() {
                 type="number"
                 step="0.01"
                 value={form.profundidade_cm}
-                onChange={(event) => updateField('profundidade_cm', event.target.value)}
+                onChange={(event) =>
+                  updateField('profundidade_cm', event.target.value)
+                }
               />
             </label>
           </div>
@@ -168,6 +190,7 @@ export default function EquipmentRegisterPage() {
           </button>
         </form>
       </section>
+      <Footer></Footer>
     </main>
   );
 }

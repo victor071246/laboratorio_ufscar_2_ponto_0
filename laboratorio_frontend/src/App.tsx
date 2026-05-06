@@ -6,6 +6,7 @@ import UserRegisterPage from './pages/UserRegisterPage';
 import PanelPage from './pages/PanelPage';
 import './global.css';
 import EntityPanelPage from './pages/EntityPanelPage';
+import DataPage from './pages/DataPage';
 
 function App() {
   return (
@@ -35,6 +36,19 @@ function App() {
           path="/ocorrencias"
           element={<EntityPanelPage tabela="ocorrencia"></EntityPanelPage>}
         ></Route>
+        <Route
+          path="/equipamentos/consulta"
+          element={<DataPage tabela="equipamento"></DataPage>}
+        ></Route>
+        <Route
+          path="/agendamentos/consulta"
+          element={<DataPage tabela="agendamento"></DataPage>}
+        ></Route>
+        <Route
+          path="/usuarios/consulta"
+          element={<DataPage tabela="usuario"></DataPage>}
+        ></Route>
+        <Route path="/ocorrencias/consulta"></Route>
       </Routes>
     </BrowserRouter>
   );

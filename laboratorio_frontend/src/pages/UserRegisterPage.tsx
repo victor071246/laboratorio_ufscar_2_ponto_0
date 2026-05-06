@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+//import { Link } from 'react-router-dom';
 import api from './../services/api';
 import styles from './RegisterPage.module.css';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 type Status = {
   type: 'success' | 'error';
@@ -30,14 +32,20 @@ export default function UserRegisterPage() {
         papel,
         telefone: telefone || null,
       });
-      setStatus({ type: 'success', message: 'Usuario cadastrado com sucesso.' });
+      setStatus({
+        type: 'success',
+        message: 'Usuario cadastrado com sucesso.',
+      });
       setNome('');
       setEmail('');
       setSenha('');
       setTelefone('');
       setPapel('aluno');
     } catch {
-      setStatus({ type: 'error', message: 'Nao foi possivel cadastrar o usuario.' });
+      setStatus({
+        type: 'error',
+        message: 'Nao foi possivel cadastrar o usuario.',
+      });
     } finally {
       setLoading(false);
     }
@@ -45,18 +53,19 @@ export default function UserRegisterPage() {
 
   return (
     <main className={styles.page}>
-      <header className={styles.header}>
+      <Header></Header>
+      {/* <header className={styles.header}>
         <Link to="/">Inicio</Link>
         <Link to="/cadastro/equipamentos">Cadastrar equipamento</Link>
-      </header>
+      </header> */}
 
       <section className={styles.shell}>
         <aside className={styles.intro}>
           <p className={styles.eyebrow}>Pessoas do laboratorio</p>
           <h1>Cadastro de usuarios</h1>
           <p>
-            Registre alunos, supervisores e administradores que vao participar da
-            rotina de uso dos equipamentos do laboratorio.
+            Registre alunos, supervisores e administradores que vao participar
+            da rotina de uso dos equipamentos do laboratorio.
           </p>
         </aside>
 
@@ -65,7 +74,11 @@ export default function UserRegisterPage() {
 
           <label>
             Nome completo
-            <input value={nome} onChange={(event) => setNome(event.target.value)} required />
+            <input
+              value={nome}
+              onChange={(event) => setNome(event.target.value)}
+              required
+            />
           </label>
 
           <label>
@@ -92,12 +105,18 @@ export default function UserRegisterPage() {
           <div className={styles.twoColumns}>
             <label>
               Telefone
-              <input value={telefone} onChange={(event) => setTelefone(event.target.value)} />
+              <input
+                value={telefone}
+                onChange={(event) => setTelefone(event.target.value)}
+              />
             </label>
 
             <label>
               Perfil
-              <select value={papel} onChange={(event) => setPapel(event.target.value)}>
+              <select
+                value={papel}
+                onChange={(event) => setPapel(event.target.value)}
+              >
                 <option value="aluno">Aluno</option>
                 <option value="supervisor">Supervisor</option>
                 <option value="admin">Admin</option>
@@ -110,6 +129,7 @@ export default function UserRegisterPage() {
           </button>
         </form>
       </section>
+      <Footer></Footer>
     </main>
   );
 }
