@@ -8,17 +8,17 @@ export default function PanelPage() {
     <main className={styles.page}>
       <Header></Header>
       <div className={styles.grid}>
-        <Link to="/agendamentos" className={styles.card}>
-          Agendamentos
+        <Link to="/equipamentos" className={styles.card}>
+          Equipamentos
         </Link>
         <Link to="/agendamentos" className={styles.card}>
           Agendamentos
         </Link>
-        <Link to="/agendamentos" className={styles.card}>
-          Agendamentos
+        <Link to="/usuarios" className={styles.card}>
+          Usuarios
         </Link>
-        <Link to="/agendamentos" className={styles.card}>
-          Agendamentos
+        <Link to="/ocorrencias" className={styles.card}>
+          Ocorrências
         </Link>
       </div>
       <Footer></Footer>

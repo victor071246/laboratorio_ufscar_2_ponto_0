@@ -1,0 +1,82 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  margin: 0;
+}
+
+.content {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1;
+}
+
+.filterArea {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  background: #fbfaf8;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(7, 38, 45, 0.08);
+  border: 1px solid rgba(7, 38, 45, 0.08);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 700px;
+}
+
+.table thead {
+  background: linear-gradient(
+    110deg,
+    rgba(7, 38, 45, 0.92),
+    rgba(13, 75, 65, 0.82)
+  );
+  color: #fbfaf8;
+}
+
+.table th {
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.table td {
+  padding: 1rem;
+  font-size: 0.95rem;
+  color: #1e1e1e;
+  border-bottom: 1px solid rgba(7, 38, 45, 0.08);
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: rgba(13, 75, 65, 0.04);
+}
+
+.table tbody tr:hover {
+  background-color: rgba(13, 75, 65, 0.1);
+  transition: background-color 0.2s ease;
+}
+
+.emptyState {
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  border-radius: 12px;
+  background: #fbfaf8;
+  color: rgba(7, 38, 45, 0.8);
+  border: 1px solid rgba(7, 38, 45, 0.08);
+  box-shadow: 0 8px 24px rgba(7, 38, 45, 0.06);
+}

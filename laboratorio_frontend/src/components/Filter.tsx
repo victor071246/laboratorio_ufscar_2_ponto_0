@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import api from '../services/api';
 import styles from './Filter.module.css';
+import { FaSearch } from 'react-icons/fa';
 
 export function BarraBusca({ tabela }: { tabela: string }) {
   const [campoSelecionado, setCampoSelecionado] = useState('');
@@ -27,6 +28,7 @@ export function BarraBusca({ tabela }: { tabela: string }) {
 
   return (
     <div className={styles.container}>
+      <FaSearch className={styles.icone}></FaSearch>
       <input value={valor} onChange={(e) => setValor(e.target.value)}></input>
       <select
         value={operadorSelecionado}
