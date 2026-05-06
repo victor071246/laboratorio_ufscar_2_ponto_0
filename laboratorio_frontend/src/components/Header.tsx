@@ -10,10 +10,8 @@ export default function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api
-      .get('/auth/usuario')
-      .then((res) => setNome(res.data.data.nome))
-      .catch(() => navigate('/login'));
+    api.get('/auth/usuario').then((res) => setNome(res.data.data.nome));
+    //.catch(() => navigate('/login'));
   }, []);
 
   async function handleLogout() {

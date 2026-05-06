@@ -5,7 +5,7 @@ import LoginPage from './pages/LoginPage';
 import UserRegisterPage from './pages/UserRegisterPage';
 import PanelPage from './pages/PanelPage';
 import './global.css';
-import DataPage from './pages/DataPage';
+import EntityPanelPage from './pages/EntityPanelPage';
 
 function App() {
   return (
@@ -21,19 +21,19 @@ function App() {
         <Route path="/panel" element={<PanelPage></PanelPage>}></Route>
         <Route
           path="/equipamentos"
-          element={<DataPage tabela="equipamento"></DataPage>}
+          element={<EntityPanelPage tabela="equipamento"></EntityPanelPage>}
         ></Route>
         <Route
           path="/agendamentos"
-          element={<DataPage tabela="agendamento"></DataPage>}
+          element={<EntityPanelPage tabela="agendamento"></EntityPanelPage>}
         ></Route>
         <Route
           path="/usuarios"
-          element={<DataPage tabela="usuario"></DataPage>}
+          element={<EntityPanelPage tabela="usuario"></EntityPanelPage>}
         ></Route>
         <Route
           path="/ocorrencias"
-          element={<DataPage tabela="ocorrencia"></DataPage>}
+          element={<EntityPanelPage tabela="ocorrencia"></EntityPanelPage>}
         ></Route>
       </Routes>
     </BrowserRouter>

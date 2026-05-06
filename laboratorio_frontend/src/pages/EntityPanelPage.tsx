@@ -13,6 +13,7 @@ export default function EntityPanelPage({ tabela }: { tabela: string }) {
         </Link>
         <Link to={`/${tabela}/cadastro`}> Cadastrar ${tabela}</Link>
       </div>
+      <Footer></Footer>
     </main>
   );
 }
