@@ -24,7 +24,7 @@ export default function HomePage() {
         <nav className={styles.nav}>
           <img className={styles.logo} src={logo} alt="Logo LGBA UFSCar" />
           <div className={styles.navActions}>
-            <Link className={styles.loginButton} to="/painel/">
+            <Link className={styles.loginButton} to="/panel/">
               Acesse o sistema
             </Link>
             <Link className={styles.loginButton} to="/cadastro/equipamentos">
