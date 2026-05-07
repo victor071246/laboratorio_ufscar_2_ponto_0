@@ -14,32 +14,46 @@ export default function LoginPage() {
       await api.post('/auth/login', { email, senha });
       window.location.href = '/';
     } catch {
-      setErro('Credenciais inválidas');
+      setErro('Credenciais inválidas. Tente novamente.');
     }
   }
 
   return (
     <div className={styles.loginPage}>
-      <div className={styles.loginFormDiv}>
+      <div className={styles.loginCard}>
+        <img className={styles.logo} src={logo} alt="Logo Laboratório de Química" />
+        
+        <h1 className={styles.title}>Acesso ao Sistema</h1>
+        <p className={styles.subtitle}>Insira suas credenciais para continuar</p>
+
         <form className={styles.loginForm} onSubmit={handleLogin}>
-          <img className={styles.lgba_logo} src={logo}></img>
-          {erro && <p className={styles.floatingLabel}>{erro}</p>}
-          <div className={styles.inputs}>
+          <div className={styles.inputGroup}>
             <input
               className={styles.loginInput}
               type="email"
-              placeholder="Email"
+              placeholder="E-mail Institucional"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-            ></input>
+              required
+            />
+          </div>
+          
+          <div className={styles.inputGroup}>
             <input
               className={styles.loginInput}
               type="password"
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-            ></input>
+              required
+            />
           </div>
+
+          {erro && (
+            <div className={styles.errorMessage}>
+              <span>⚠️</span> {erro}
+            </div>
+          )}
 
           <button className={styles.loginBtn} type="submit">
             Entrar
