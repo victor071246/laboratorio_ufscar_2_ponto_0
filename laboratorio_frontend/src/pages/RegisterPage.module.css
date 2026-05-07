@@ -1,9 +1,16 @@
 .page {
   min-height: 100vh;
-  background: #f4f7f6;
+  
+  background:
+    linear-gradient(110deg, rgba(7, 38, 45, 0.88), rgba(13, 75, 65, 0.72)),
+    url('../assets/images/Gemini_Generated_Image_8l44ch8l44ch8l44(1).png') center/cover;
+  background-attachment: fixed; 
+  
   color: #14231f;
   font-family: Inter, Arial, sans-serif;
-  padding: 28px clamp(18px, 5vw, 68px) 56px;
+  
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
@@ -24,39 +31,58 @@
 }
 
 .shell {
-  display: grid;
-  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
-  gap: 28px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 40px auto;
+  padding: 0 20px;
+  flex: 1;
 }
 
 .intro {
-  padding: 36px;
-  border-radius: 8px;
-  background: #123d36;
+  padding: 40px 45px;
+  border-radius: 12px;
+  
+  background: rgba(7, 38, 45, 0.45); 
+  
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  
+  border: 1px solid rgba(255, 255, 255, 0.15); 
+  
   color: #ffffff;
+  
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4); 
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .eyebrow {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   color: #75dec0;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  letter-spacing: 0;
+  letter-spacing: 1px;
   text-transform: uppercase;
 }
 
 .intro h1 {
-  margin: 0 0 18px;
-  font-size: clamp(2rem, 4vw, 3.35rem);
-  line-height: 1;
-  letter-spacing: 0;
+  margin: 0 0 24px;
+  font-size: 2.6rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  word-wrap: break-word;
 }
 
 .intro p {
   margin: 0;
   color: #d9ece7;
-  line-height: 1.7;
+  line-height: 1.6;
+  font-size: 1.05rem;
 }
 
 .form {
@@ -96,28 +122,30 @@
   resize: vertical;
 }
 
-.twoColumns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
-}
-
+.twoColumns,
 .fourColumns {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
+  align-items: end;
 }
 
 .form button {
-  align-self: flex-start;
+  width: 100%;
   border: 0;
-  border-radius: 6px;
-  padding: 14px 18px;
-  background: #0f6f5f;
-  color: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  background: #13b58c;
+  color: #07262d;
   font: inherit;
   font-weight: 800;
   cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.form button:hover{
+  background: #75dec0;
+  transform: translateY(-2px);
 }
 
 .form button:disabled {
@@ -143,10 +171,31 @@
   color: #9d2c22;
 }
 
-@media (max-width: 900px) {
-  .shell,
-  .twoColumns,
+/* Quando a tela for grande (PC), voltamos para o modo de colunas */
+@media (min-width: 900px) {
+  .shell {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    gap: 40px;
+    align-items: start;
+  }
+  
+  .intro h1 {
+    font-size: 2.6rem;
+  }
+
+  .form button {
+    width: auto;
+    padding: 14px 30px;
+  }
+  
+  .twoColumns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
   .fourColumns {
-    grid-template-columns: 1fr;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
   }
 }

@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FiMenu, FiX } from 'react-icons/fi';
 import styles from './HomePage.module.css';
 import logo from '../assets/images/logo.jpg';
 
@@ -18,20 +20,30 @@ const areas = [
 ];
 
 export default function HomePage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <main className={styles.page}>
       <header className={styles.hero}>
-        <nav className={styles.nav}>
+<nav className={styles.nav}>
           <img className={styles.logo} src={logo} alt="Logo LGBA UFSCar" />
-          <div className={styles.navActions}>
-            <Link className={styles.loginButton} to="/panel/">
-              Acesse o sistema
-            </Link>
-            <Link className={styles.loginButton} to="/cadastro/equipamentos">
+
+          <button 
+            className={styles.hamburger} 
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FiX size={32} /> : <FiMenu size={32} />}
+          </button>
+
+          <div className={`${styles.navActions} ${menuOpen ? styles.navActionsOpen : ''}`}>
+            <Link className={styles.navTextLink} to="/sobre">
               Sobre nós
             </Link>
-            <Link className={styles.loginButton} to="/login">
+            <Link className={styles.navTextLink} to="/login">
               Login
+            </Link>
+            <Link className={styles.navPrimaryButton} to="/panel/">
+              Acesse o sistema
             </Link>
           </div>
         </nav>

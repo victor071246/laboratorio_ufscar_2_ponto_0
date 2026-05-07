@@ -22,11 +22,59 @@
 }
 
 .logo {
-  width: min(210px, 44vw);
+  width: min(140px, 35vw);
   height: auto;
   background: #ffffff;
   border-radius: 8px;
   padding: 8px;
+  z-index: 100;
+  transition: transform 0.2s ease-in-out; 
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.navTextLink {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  transition: transform 0.2s ease-in-out, background 0.2s, box-shadow 0.2s;
+}
+
+.navTextLink:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.navPrimaryButton {
+  background: #59d2b1;
+  color: #07262d;
+  text-decoration: none;
+  font-weight: 800;
+  padding: 10px 24px;
+  border-radius: 8px;
+  transition: transform 0.2, ease-in-out, background 0.2s, box-shadow 0.2s;
+}
+
+.navPrimaryButton:hover {
+  background: #75dec0;
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(89, 210, 177, 0.4);
 }
 
 .navActions,
@@ -49,6 +97,7 @@
   text-decoration: none;
   font-weight: 700;
   line-height: 1;
+  transition: transform 0.2s ease-in-out, background 0.2s, box-shadow 0.2s;
 }
 
 .secondaryLink {
@@ -61,6 +110,19 @@
   color: #0f4b42;
 }
 
+.primaryButton:hover, 
+.workflowActions a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  filter: brightness(1.1);
+}
+
+.outlineButton:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #ffffff;
+}
+
 .outlineButton {
   border: 1px solid rgba(255, 255, 255, 0.65);
 }
@@ -70,7 +132,7 @@
   padding-top: clamp(64px, 12vw, 130px);
 }
 
-.eyebrow,
+
 .sectionLabel {
   margin: 0 0 12px;
   color: #59d2b1;
@@ -78,6 +140,20 @@
   font-weight: 800;
   letter-spacing: 0;
   text-transform: uppercase;
+}
+
+.eyebrow {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  
+  background: linear-gradient(90deg, #59d2b1, #ffffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow: 0 2px 15px rgba(89, 210, 177, 0.4);
 }
 
 .hero h1 {
@@ -148,17 +224,82 @@
   color: #ffffff;
 }
 
+/* INSERÇÃO DO MENU HAMBÚRGUER - FOI DIFICIL FAZER FUMEGÁ ESSA BAGAÇA */
 @media (max-width: 820px) {
-  .nav,
-  .overview,
-  .workflow {
-    grid-template-columns: 1fr;
+  .hamburger {
+    display: block;
+    z-index: 1000;
   }
 
   .nav {
-    align-items: flex-start;
+    position: relative;
   }
 
+  @keyframes menuFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .navActions {
+    display: none; 
+    flex-direction: column;
+    position: absolute; 
+    top: 60px;
+    right: 0; 
+    width: 240px; 
+    
+    background: rgba(13, 75, 65, 0.90); 
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    
+    padding: 24px 20px; 
+    border-radius: 16px; 
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+    z-index: 999; 
+    
+    animation: menuFadeIn 0.3s ease-out forwards; 
+  }
+
+  .navActionsOpen {
+    display: flex; 
+  }
+
+  .navActions a:not(.navPrimaryButton) {
+    width: 100%;
+    text-align: center; 
+    padding: 14px 10px;
+    border: none !important; 
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important; 
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    font-size: 1.05rem; 
+    color: #e8f4ef;
+  }
+  
+  .navActions a:not(.navPrimaryButton):last-of-type {
+    border-bottom: none !important;
+    margin-bottom: 8px; 
+  }
+
+  .navActions .navPrimaryButton {
+    width: 100%;
+    text-align: center;
+    margin-top: 8px;
+    padding: 14px;
+    font-size: 1.05rem;
+    border-radius: 10px; 
+  }
+
+  .overview,
+  .workflow,
   .cards {
     grid-template-columns: 1fr;
   }
