@@ -8,10 +8,10 @@ export default function EntityPanelPage({ tabela }: { tabela: string }) {
     <main className={styles.page}>
       <Header></Header>
       <div className={styles.grid}>
-        <Link to={`/${tabela}s/consulta`} className={styles.card}>
+        <Link to={`/${tabela}/consulta`} className={styles.card}>
           Consultar {tabela}
         </Link>
-        <Link to={`/cadastro/${tabela}s/`} className={styles.card}>
+        <Link to={`/cadastro/${tabela}/`} className={styles.card}>
           {' '}
           Cadastrar {tabela}
         </Link>

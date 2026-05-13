@@ -1,4 +1,4 @@
-use axum::extract::State;
+use axum::extract::{Query, State};
 use axum::http::StatusCode;
 
 use crate::models::filtro::FiltroDto;
@@ -56,7 +56,7 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Usuario>> {
-    let operador = match filtro.operador_as_str() {
+    let operador = match filtro.operador.as_str() {
         "gt" | ">" => ">",
         "lt" | "<" => "<",
         "gte" | ">=" => ">=",

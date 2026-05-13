@@ -33,7 +33,7 @@ pub async fn listar(
 
 pub async fn listar_campos_ocorrencia(
     State(state): State<AppState>
-) -> APiResponse<Vec<String>> {
+) -> ApiResponse<Vec<String>> {
     let colunas = sqlx::query!(
         "SELECT column_name FROM information_schema.columns WHERE table_name = 'ocorrencia'"
     )
@@ -43,7 +43,7 @@ pub async fn listar_campos_ocorrencia(
 
     match colunas {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Colunas listadas", lista)),
-        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao listar colunas: {}"^, e)))
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao listar colunas: {}", e)))
     }
 }
 
@@ -51,7 +51,7 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Ocorrencia>> {
-    let operador = match filtro.operador_as_str() {
+    let operador = match filtro.operador.as_str() {
         "gt" | ">" => ">",
         "lt" | "<" => "<",
         "gte" | ">=" => ">=",
@@ -59,7 +59,7 @@ pub async fn busca_com_filtro(
         _ => "=",
     };
 
-    let slq = format!(
+    let sql = format!(
         r#"SELECT id, uuid, equipamento_id, registrador_por,
         tipo as "tipo: TipoOcorrencia",
         descricao, resolvida_em, criado_em

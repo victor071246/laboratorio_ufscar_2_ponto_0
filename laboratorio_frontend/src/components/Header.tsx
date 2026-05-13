@@ -10,7 +10,10 @@ export default function Header() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    api.get('/auth/usuario').then((res) => setNome(res.data.data.nome));
+    api
+      .get('/auth/usuario')
+      .then((res) => setNome(res.data.data.nome))
+      .catch(() => {});
     //.catch(() => navigate('/login'));
   }, []);
 

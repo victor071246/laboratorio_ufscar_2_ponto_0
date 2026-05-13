@@ -128,7 +128,8 @@ pub async fn listar_colunas_tabela(
         "SELECT column_name FROM information_schema.columns WHERE table_name = 'equipamento'"
     )
     .fetch_all(&state.db)
-    .await;
+    .await
+    .map(|rows| rows.into_iter().flatten().collect::<Vec<String>>());
 
     match colunas {
         Ok(lista) => ApiResponse(
@@ -146,29 +147,50 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Equipamento>> {
-    let operador = match filtro.operador.as_str() {
-        "gt" | ">" => ">",
-        "lt" | "<" => "<",
-        "gte" | ">=" => ">=",
-        "lte" | "<=" => "<=",
-        _ => "=",
-    };
+    if filtro.campo.is_empty() || filtro.valor.is_empty() {
+
+        let equipamentos = sqlx::query_as!(
+            Equipamento,
+            r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
+            data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
+            ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
+            FROM equipamento ORDER BY nome"#
+        ).fetch_all(&state.db).await;
+
+        return match equipamentos {
+            Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos listados", lista)),
+            Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro: {e}")))
+        };
+    }
+ // ← SUBSTITUI TUDO DAQUI
+    let (operador_sql, valor_sql): (&str, String) = match filtro.operador.as_str() {
+    ">" => (">", filtro.valor.clone()),
+    ">=" => (">=", filtro.valor.clone()),
+    "<=" => ("<=", filtro.valor.clone()),
+    "<" => ("<", filtro.valor.clone()),
+    _ => ("ILIKE", format!("%{}%", filtro.valor)),
+};
 
     let sql = format!(
-    r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
-    data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm, ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
-    FROM equipamento WHERE {} {} $1 ORDER BY nome"#,
-    filtro.campo, operador
+        r#"SELECT id, uuid, nome, descricao, estado,
+        data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,
+        ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por
+        FROM equipamento WHERE {}::text {} $1 ORDER BY nome"#,
+        filtro.campo, operador_sql
     );
 
     let equipamentos = sqlx::query_as::<_, Equipamento>(&sql)
-        .bind(filtro.valor)
+        .bind(valor_sql)
         .fetch_all(&state.db)
         .await;
+    // ← ATÉ AQUI
 
     match equipamentos {
-        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equiapmentos encontrados", lista)),
-        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos: {}", e)))
+    Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos encontrados", lista)),
+    Err(e) => {
+        eprintln!("Erro busca_com_filtro: {e}"); // ← adiciona isso
+        ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos: {}", e)))
+    }
     }
 }
 

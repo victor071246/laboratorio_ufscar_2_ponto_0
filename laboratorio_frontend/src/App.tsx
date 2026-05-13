@@ -22,11 +22,11 @@ function App() {
         <Route path="/panel" element={<PanelPage></PanelPage>}></Route>
         <Route
           path="/equipamentos"
-          element={<EntityPanelPage tabela="equipamento"></EntityPanelPage>}
+          element={<EntityPanelPage tabela="equipamentos"></EntityPanelPage>}
         ></Route>
         <Route
           path="/agendamentos"
-          element={<EntityPanelPage tabela="agendamento"></EntityPanelPage>}
+          element={<EntityPanelPage tabela="agendamentos"></EntityPanelPage>}
         ></Route>
         <Route
           path="/usuarios"
@@ -34,15 +34,15 @@ function App() {
         ></Route>
         <Route
           path="/ocorrencias"
-          element={<EntityPanelPage tabela="ocorrencia"></EntityPanelPage>}
+          element={<EntityPanelPage tabela="ocorrencias"></EntityPanelPage>}
         ></Route>
         <Route
           path="/equipamentos/consulta"
-          element={<DataPage tabela="equipamento"></DataPage>}
+          element={<DataPage tabela="equipamentos"></DataPage>}
         ></Route>
         <Route
           path="/agendamentos/consulta"
-          element={<DataPage tabela="agendamento"></DataPage>}
+          element={<DataPage tabela="agendamentos"></DataPage>}
         ></Route>
         <Route
           path="/usuarios/consulta"

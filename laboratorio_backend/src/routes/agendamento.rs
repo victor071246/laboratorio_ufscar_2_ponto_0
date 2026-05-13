@@ -10,9 +10,9 @@ pub fn rotas() -> Router<AppState> {
         .route("/", get(agendamento::listar))
         .route("/", post(agendamento::criar))
         .route("/listar_todos_equipamentos", get(agendamento::listar))
-        .route("/campos", get(listar_campos_agendamento))
+        .route("/campos", get(agendamento::listar_campos_agendamento))
         .route("/{uuid}", get(agendamento::buscar_por_uuid))
-        .route("/buscar/", get(agendamento::buscar_com_filtro))
+        .route("/buscar/", get(agendamento::busca_com_filtro))
         .route("/{uuid}", put(agendamento::atualizar))
         .route("/{uuid}/cancelar", post(agendamento::cancelar))
 }
