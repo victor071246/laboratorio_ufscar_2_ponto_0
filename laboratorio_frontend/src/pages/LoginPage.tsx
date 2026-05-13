@@ -1,20 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import api from './../services/api';
+import { useAuthStore } from '../store/authStore';
 import styles from './LoginPage.module.css';
 import logo from '../assets/images/logo.jpg';
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const usuario = useAuthStore((state) => state.usuario);
+  const setUsuario = useAuthStore((state) => state.setUsuario);
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+
+  const from =
+    (location.state as { from?: { pathname: string } } | null)?.from
+      ?.pathname ?? '/panel';
+
+  useEffect(() => {
+    if (usuario) {
+      navigate(from, { replace: true });
+      return;
+    }
+
+    api
+      .get('/auth/usuario')
+      .then((res) => {
+        setUsuario(res.data.data);
+        navigate(from, { replace: true });
+      })
+      .catch(() => undefined);
+  }, [from, navigate, setUsuario, usuario]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     try {
       await api.post('/auth/login', { email, senha });
-      window.location.href = '/';
+      const res = await api.get('/auth/usuario');
+      setUsuario(res.data.data);
+      navigate(from, { replace: true });
     } catch {
-      setErro('Credenciais inválidas');
+      setErro('Credenciais invalidas');
     }
   }
 

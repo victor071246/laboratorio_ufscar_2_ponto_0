@@ -1,4 +1,7 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
+import { useAuthStore } from '../store/authStore';
 import styles from './HomePage.module.css';
 import logo from '../assets/images/logo.jpg';
 
@@ -18,6 +21,17 @@ const areas = [
 ];
 
 export default function HomePage() {
+  const usuario = useAuthStore((state) => state.usuario);
+  const setUsuario = useAuthStore((state) => state.setUsuario);
+  const clearUsuario = useAuthStore((state) => state.clearUsuario);
+
+  useEffect(() => {
+    api
+      .get('/auth/usuario')
+      .then((res) => setUsuario(res.data.data))
+      .catch(() => clearUsuario());
+  }, [clearUsuario, setUsuario]);
+
   return (
     <main className={styles.page}>
       <header className={styles.hero}>
@@ -28,11 +42,15 @@ export default function HomePage() {
               Acesse o sistema
             </Link>
             <Link className={styles.loginButton} to="/cadastro/equipamentos">
-              Sobre nós
+              Sobre nos
             </Link>
-            <Link className={styles.loginButton} to="/login">
-              Login
-            </Link>
+            {usuario ? (
+              <span className={styles.sessionLabel}>{usuario.nome}</span>
+            ) : (
+              <Link className={styles.loginButton} to="/login">
+                Login
+              </Link>
+            )}
           </div>
         </nav>
 
@@ -47,8 +65,8 @@ export default function HomePage() {
             e docentes.
           </p>
           <div className={styles.heroActions}>
-            <Link className={styles.primaryButton} to="/login">
-              Entrar no sistema
+            <Link className={styles.primaryButton} to={usuario ? '/panel' : '/login'}>
+              {usuario ? 'Ir para o painel' : 'Entrar no sistema'}
             </Link>
             <Link className={styles.outlineButton} to="/cadastro/equipamentos">
               Novo equipamento
