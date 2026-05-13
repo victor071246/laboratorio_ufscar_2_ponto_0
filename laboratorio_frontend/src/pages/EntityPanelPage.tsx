@@ -7,6 +7,7 @@ export default function EntityPanelPage({ tabela }: { tabela: string }) {
   return (
     <main className={styles.page}>
       <Header></Header>
+
       <div className={styles.grid}>
         <Link to={`/${tabela}/consulta`} className={styles.card}>
           Consultar {tabela}

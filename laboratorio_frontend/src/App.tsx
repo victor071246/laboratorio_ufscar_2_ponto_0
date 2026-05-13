@@ -42,7 +42,9 @@ function App() {
         ></Route>
         <Route
           path="/agendamentos/consulta"
-          element={<DataPage tabela="agendamentos"></DataPage>}
+          element={
+            <DataPage tabela="equipamentos" modo="agendamento"></DataPage>
+          }
         ></Route>
         <Route
           path="/usuarios/consulta"

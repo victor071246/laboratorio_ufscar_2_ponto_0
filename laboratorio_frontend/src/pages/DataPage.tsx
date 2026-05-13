@@ -1,11 +1,26 @@
 import { BarraBusca } from '../components/Filter';
 import { useFiltroStore } from '../store/filtroStore';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import styles from './DataPage.module.css';
 
-export default function DataPage({ tabela }: { tabela: string }) {
+export default function DataPage({
+  tabela,
+  modo,
+}: {
+  tabela: string;
+  modo?: 'agendamento' | 'default';
+}) {
   const resultados = useFiltroStore((s) => s.resultados);
+  const navigate = useNavigate();
+
+  function handleClick(id: number) {
+    if (modo === 'agendamento') {
+      navigate(`/agendamentos/${id}/grid`);
+    }
+    navigate(`/equipamentos/${id}`);
+  }
 
   return (
     <main className={styles.page}>
@@ -27,7 +42,7 @@ export default function DataPage({ tabela }: { tabela: string }) {
               </thead>
               <tbody>
                 {resultados.map((item, index) => (
-                  <tr key={index}>
+                  <tr key={index} onClick={() => handleClick(item.id)}>
                     {Object.values(item).map((valor, i) => (
                       <td key={i}>{String(valor)}</td>
                     ))}
