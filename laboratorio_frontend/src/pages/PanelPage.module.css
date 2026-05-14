@@ -1,48 +1,64 @@
-/* PanelPage.module.css */
-
 .page {
-  min-height: 100dvh;
+  min-height: 100vh;
+  background:
+    linear-gradient(110deg, rgba(7, 38, 45, 0.88), rgba(13, 75, 65, 0.72)),
+    url('../assets/images/Gemini_Generated_Image_8l44ch8l44ch8l44(1).png')
+      center/cover;
+  background-attachment: fixed;
   display: flex;
-  justify-content: center;
-  background-color: #ffffff;
-  padding: 2rem;
-  padding-top: 0;
-  padding-bottom: 0;
   flex-direction: column;
-  align-items: center;
   margin: 0;
-  gap: 10dvh;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
   width: 100%;
+  max-width: 900px;
+  margin: 60px auto;
+  padding: 0 20px;
+  flex: 1;
 }
 
 .card {
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
-  background: linear-gradient(
-    110deg,
-    rgba(7, 38, 45, 0.88),
-    rgba(13, 75, 65, 0.72)
-  );
-  color: #fbfaf8;
+  min-height: 180px;
+  background: rgba(7, 38, 45, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #ffffff;
   text-decoration: none;
-  border-radius: 8px;
-  font-size: 2rem;
-  font-weight: 500;
-  transition: background-color 0.2s;
-  width: 40dvw;
-  height: 32dvh;
-  gap: 0px;
-  margin: auto;
+  border-radius: 16px;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition:
+    transform 0.2s ease-in-out,
+    background 0.2s,
+    box-shadow 0.2s,
+    border-color 0.2s;
 }
 
 .card:hover {
-  background-color: #3a3a3a;
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #59d2b1;
+  box-shadow: 0 12px 40px rgba(89, 210, 177, 0.2);
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    margin: 40px auto;
+  }
+
+  .card {
+    min-height: 130px;
+  }
 }
