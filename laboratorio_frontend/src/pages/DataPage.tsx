@@ -1,50 +1,159 @@
+import { useEffect, useState } from 'react';
 import { BarraBusca } from '../components/Filter';
-import { useFiltroStore } from '../store/filtroStore';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import api from '../services/api';
+import {
+  entities,
+  formatCellValue,
+  formatColumnName,
+} from '../config/entities';
+import type { EntityKey } from '../config/entities';
 import styles from './DataPage.module.css';
+
+type Row = Record<string, unknown>;
 
 export default function DataPage({
   tabela,
   modo,
 }: {
-  tabela: string;
+  tabela: EntityKey;
   modo?: 'agendamento' | 'default';
 }) {
-  const resultados = useFiltroStore((s) => s.resultados);
+  const entity = entities[tabela];
+  const [dados, setDados] = useState<Row[]>([]);
+  const [resultados, setResultados] = useState<Row[]>([]);
+  const [campos, setCampos] = useState<string[]>([]);
+  const [campoSelecionado, setCampoSelecionado] = useState('');
+  const [operadorSelecionado, setOperadorSelecionado] = useState('contem');
+  const [valor, setValor] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [erro, setErro] = useState('');
   const navigate = useNavigate();
 
-  function handleClick(id: number) {
+  function handleClick(item: Row) {
+    const id = item.uuid ?? item.id;
     if (modo === 'agendamento') {
       navigate(`/agendamentos/${id}/grid`);
+      return;
     }
     navigate(`/equipamentos/${id}`);
   }
+
+  useEffect(() => {
+    setLoading(true);
+    setErro('');
+    setValor('');
+    setCampoSelecionado('');
+    setOperadorSelecionado('contem');
+
+    Promise.all([
+      api.get(entity.endpoint),
+      api.get(`${entity.endpoint}/campos`),
+    ])
+      .then(([dadosRes, camposRes]) => {
+        const lista = dadosRes.data.data ?? [];
+        setDados(lista);
+        setResultados(lista);
+        const hiddenFields = entity.hiddenFields ?? [];
+        setCampos(
+          (camposRes.data.data ?? []).filter(
+            (campo: string) => !hiddenFields.includes(campo),
+          ),
+        );
+      })
+      .catch(() => {
+        setDados([]);
+        setResultados([]);
+        setCampos([]);
+        setErro(`Nao foi possivel carregar ${entity.label.toLowerCase()}.`);
+      })
+      .finally(() => setLoading(false));
+  }, [entity.endpoint, entity.label]);
+
+  useEffect(() => {
+    const termo = valor.trim().toLowerCase();
+    if (!termo) {
+      setResultados(dados);
+      return;
+    }
+
+    if (campoSelecionado) {
+      setLoading(true);
+      setErro('');
+      api
+        .get(`${entity.endpoint}/buscar`, {
+          params: {
+            campo: campoSelecionado,
+            operador: operadorSelecionado,
+            valor,
+          },
+        })
+        .then((res) => setResultados(res.data.data ?? []))
+        .catch(() => {
+          setResultados([]);
+          setErro(`Nao foi possivel filtrar ${entity.label.toLowerCase()}.`);
+        })
+        .finally(() => setLoading(false));
+      return;
+    }
+
+    const filtrados = dados.filter((item) => {
+      const chaves = Object.keys(item);
+      return chaves.some((chave) =>
+        formatCellValue(item[chave]).toLowerCase().includes(termo),
+      );
+    });
+    setResultados(filtrados);
+  }, [
+    campoSelecionado,
+    dados,
+    entity.endpoint,
+    entity.label,
+    operadorSelecionado,
+    valor,
+  ]);
 
   return (
     <main className={styles.page}>
       <Header />
       <section className={styles.content}>
         <div className={styles.filterArea}>
-          <BarraBusca tabela={tabela} />
+          <BarraBusca
+            campos={campos}
+            campoSelecionado={campoSelecionado}
+            operadorSelecionado={operadorSelecionado}
+            valor={valor}
+            onCampoChange={setCampoSelecionado}
+            onOperadorChange={setOperadorSelecionado}
+            onValorChange={setValor}
+          />
         </div>
 
-        {resultados.length > 0 ? (
+        {loading ? (
+          <div className={styles.emptyState}>Carregando...</div>
+        ) : erro ? (
+          <div className={styles.emptyState}>{erro}</div>
+        ) : resultados.length > 0 ? (
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
               <thead>
                 <tr>
-                  {Object.keys(resultados[0]).map((chave) => (
-                    <th key={chave}>{chave}</th>
+                  {campos.map((chave) => (
+                    <th key={chave}>{formatColumnName(chave)}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {resultados.map((item, index) => (
-                  <tr key={index} onClick={() => handleClick(item.id)}>
-                    {Object.values(item).map((valor, i) => (
-                      <td key={i}>{String(valor)}</td>
+                  <tr
+                    key={String(item.uuid ?? item.id ?? index)}
+                    onClick={() => handleClick(item)}
+                    style={{ cursor: modo ? 'pointer' : 'default' }}
+                  >
+                    {campos.map((campo) => (
+                      <td key={campo}>{formatCellValue(item[campo])}</td>
                     ))}
                   </tr>
                 ))}

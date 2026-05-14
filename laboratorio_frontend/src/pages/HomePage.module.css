@@ -10,7 +10,8 @@
   padding: 28px clamp(18px, 5vw, 72px) 72px;
   background:
     linear-gradient(110deg, rgba(7, 38, 45, 0.88), rgba(13, 75, 65, 0.72)),
-    url('../assets/images/Gemini_Generated_Image_8l44ch8l44ch8l44(1).png') center/cover;
+    url('../assets/images/Gemini_Generated_Image_8l44ch8l44ch8l44(1).png')
+      center/cover;
   color: #ffffff;
 }
 
@@ -42,7 +43,8 @@
 .loginButton,
 .primaryButton,
 .outlineButton,
-.workflowActions a {
+.workflowActions a,
+.sessionLabel {
   border-radius: 6px;
   padding: 12px 16px;
   color: inherit;
@@ -56,9 +58,15 @@
 }
 
 .loginButton,
-.primaryButton {
+.primaryButton,
+.sessionLabel {
   background: #ffffff;
   color: #0f4b42;
+}
+
+.sessionLabel {
+  display: inline-flex;
+  align-items: center;
 }
 
 .outlineButton {
