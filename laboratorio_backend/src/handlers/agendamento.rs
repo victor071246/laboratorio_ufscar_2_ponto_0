@@ -1,9 +1,9 @@
 use axum::{
     Json, extract::{Path, Query, State}, http::StatusCode
 };
-use uuid::{self, Uuid};
+use uuid::Uuid;
 
-use crate::dto::{agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto},filtro::FiltroDto};
+use crate::dto::{agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto}, filtro::FiltroDto};
 use crate::models::agendamento::{Agendamento, StatusAgendamento};
 use crate::response::{ApiResponse, DinamicResponse};
 use crate::AppState;
@@ -23,21 +23,19 @@ pub async fn listar(
     .await;
 
     match agendamentos {
-        Ok(lista) =>ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamentos listados", lista)),
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamentos listados", lista)),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar agendamentos {}", e)))
     }
-
 }
 
 pub async fn listar_campos_agendamento(
     State(state): State<AppState>
 ) -> ApiResponse<Vec<String>> {
-    let colunas = sqlx::query!(
+    let colunas = sqlx::query_scalar::<_, String>(
         "SELECT column_name FROM information_schema.columns WHERE table_name = 'agendamento'"
     )
     .fetch_all(&state.db)
-    .await
-    .map(|rows| rows.into_iter().map(|r| r.column_name.unwrap_or_default()).collect::<Vec<String>>());
+    .await;
 
     match colunas {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Colunas listadas", lista)),
@@ -49,6 +47,12 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Agendamento>> {
+    let campos_permitidos = [
+        "id", "uuid", "equipamento_id", "usuario_id", "status",
+        "data_inicio", "data_fim", "notificar_email",
+        "notificar_whatsapp", "observacao", "criado_em",
+    ];
+
     if filtro.campo.is_empty() || filtro.valor.is_empty() {
         let agendamentos = sqlx::query_as!(
             Agendamento,
@@ -59,21 +63,24 @@ pub async fn busca_com_filtro(
             FROM agendamento ORDER BY data_inicio DESC"#
         ).fetch_all(&state.db).await;
 
-        match agendamentos {
-            Ok(lista) => ApiResponse(StatusCode::OK,
-            DinamicResponse::success("Agendamentos listados", lista)),
+        return match agendamentos {
+            Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamentos listados", lista)),
             Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro: {e}")))
         };
     }
 
+    if !campos_permitidos.contains(&filtro.campo.as_str()) {
+        return ApiResponse(StatusCode::BAD_REQUEST, DinamicResponse::error("Campo inválido"));
+    }
+
     let campos_numericos = ["id", "equipamento_id", "usuario_id"];
 
-    let (operador_sql, valor_sq): (&str, String) = match filtro.operador.as_str() {
+    let (operador_sql, valor_sql): (&str, String) = match filtro.operador.as_str() {
         ">" => (">", filtro.valor.clone()),
         ">=" => (">=", filtro.valor.clone()),
         "<=" => ("<=", filtro.valor.clone()),
         "<" => ("<", filtro.valor.clone()),
-        _ => ("ILIKE", format!("%{}%", filtro.valor))
+        _ => ("ILIKE", format!("%{}%", filtro.valor)),
     };
 
     let tipo_cast = if campos_numericos.contains(&filtro.campo.as_str()) {
@@ -83,16 +90,16 @@ pub async fn busca_com_filtro(
     };
 
     let sql = format!(
-    r#"SELECT id, uuid, equipamento_id, usuario_id,
-    status as "status: StatusAgendamento",
-    data_inicio, data_fim, notificar_email, notificar_whatsapp,
-    observacao, criado_em
-    FROM agendamento WHERE {}::text {} $1::text::{} ORDER BY data_inicio DESC"#,
-    filtro.campo, operador_sql, tipo_cast
+        r#"SELECT id, uuid, equipamento_id, usuario_id,
+        status as "status: StatusAgendamento",
+        data_inicio, data_fim, notificar_email, notificar_whatsapp,
+        observacao, criado_em
+        FROM agendamento WHERE {}::text {} $1::text::{} ORDER BY data_inicio DESC"#,
+        filtro.campo, operador_sql, tipo_cast
     );
 
     let agendamentos = sqlx::query_as::<_, Agendamento>(&sql)
-        .bind(valor_sq)
+        .bind(valor_sql)
         .fetch_all(&state.db)
         .await;
 
@@ -100,8 +107,7 @@ pub async fn busca_com_filtro(
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamentos encontrados", lista)),
         Err(e) => {
             eprintln!("Erro busca_com_filtro agendamento: {e}");
-            ApiResponse(StatusCode::INTERNAL_SERVER_ERROR,
-            DinamicResponse::error(format!("Erro ao buscar agendamentos: {e}")))
+            ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar agendamentos: {e}")))
         }
     }
 }
@@ -117,7 +123,7 @@ pub async fn buscar_por_uuid(
             data_inicio, data_fim, notificar_email, notificar_whatsapp,
             observacao, criado_em
             FROM agendamento WHERE uuid = $1"#,
-            uuid
+        uuid
     ).fetch_optional(&state.db)
     .await;
 
@@ -190,7 +196,6 @@ pub async fn criar(
         Ok(a) => ApiResponse(StatusCode::CREATED, DinamicResponse::success("Agendamento criado com sucesso", a)),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao criar agendamento {e}")))
     }
-
 }
 
 pub async fn atualizar(
@@ -212,24 +217,23 @@ pub async fn atualizar(
         status as "status: StatusAgendamento",
         data_inicio, data_fim, notificar_email, notificar_whatsapp,
         observacao, criado_em"#,
-    uuid,
-    payload.status as Option<StatusAgendamento>,
-    payload.data_inicio,
-    payload.data_fim,
-    payload.notificar_email,
-    payload.notificar_whatsapp,
-    payload.observacao
+        uuid,
+        payload.status as Option<StatusAgendamento>,
+        payload.data_inicio,
+        payload.data_fim,
+        payload.notificar_email,
+        payload.notificar_whatsapp,
+        payload.observacao
     )
     .fetch_optional(&state.db)
     .await;
 
     match agendamento {
-        Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento criado com sucesso", a)),
+        Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento atualizado", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Nenhum agendamento encontrado")),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao atualizar o agendamento {e}")))
     }
 }
-
 
 pub async fn cancelar(
     State(state): State<AppState>,
@@ -237,7 +241,7 @@ pub async fn cancelar(
 ) -> ApiResponse<Agendamento> {
     let agendamento = sqlx::query_as!(
         Agendamento,
-        r#"UPDATE agendamento SET status ='cancelado'
+        r#"UPDATE agendamento SET status = 'cancelado'
             WHERE uuid = $1 AND status NOT IN ('concluido', 'cancelado')
             RETURNING id, uuid, equipamento_id, usuario_id,
             status as "status: StatusAgendamento",
@@ -251,7 +255,7 @@ pub async fn cancelar(
         Ok(Some(a)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Agendamento cancelado", a)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Agendamento não encontrado")),
         Err(e) => {
-            eprintln!("Erro ao criar agendamento: {:?}", e);
+            eprintln!("Erro ao cancelar agendamento: {:?}", e);
             ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error("Erro ao atualizar o agendamento"))
         }
     }

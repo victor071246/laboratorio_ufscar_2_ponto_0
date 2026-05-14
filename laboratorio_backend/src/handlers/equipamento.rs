@@ -147,8 +147,14 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Equipamento>> {
-    if filtro.campo.is_empty() || filtro.valor.is_empty() {
+    let campos_permitidos = [
+        "id", "uuid", "nome", "descricao", "estado",
+        "data_aquisicao", "peso_kg", "largura_cm", "altura_cm",
+        "comprimento_cm", "ultima_vez_disponivel",
+        "ultima_vez_em_manutencao", "criado_em", "criado_por",
+    ];
 
+    if filtro.campo.is_empty() || filtro.valor.is_empty() {
         let equipamentos = sqlx::query_as!(
             Equipamento,
             r#"SELECT id, uuid, nome, descricao, estado as "estado: EstadoEquipamento",
@@ -162,14 +168,21 @@ pub async fn busca_com_filtro(
             Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro: {e}")))
         };
     }
- // ← SUBSTITUI TUDO DAQUI
+
+    if !campos_permitidos.contains(&filtro.campo.as_str()) {
+        return ApiResponse(
+            StatusCode::BAD_REQUEST,
+            DinamicResponse::error("Campo inválido"),
+        );
+    }
+
     let (operador_sql, valor_sql): (&str, String) = match filtro.operador.as_str() {
-    ">" => (">", filtro.valor.clone()),
-    ">=" => (">=", filtro.valor.clone()),
-    "<=" => ("<=", filtro.valor.clone()),
-    "<" => ("<", filtro.valor.clone()),
-    _ => ("ILIKE", format!("%{}%", filtro.valor)),
-};
+        ">" => (">", filtro.valor.clone()),
+        ">=" => (">=", filtro.valor.clone()),
+        "<=" => ("<=", filtro.valor.clone()),
+        "<" => ("<", filtro.valor.clone()),
+        _ => ("ILIKE", format!("%{}%", filtro.valor)),
+    };
 
     let sql = format!(
         r#"SELECT id, uuid, nome, descricao, estado,
@@ -183,14 +196,13 @@ pub async fn busca_com_filtro(
         .bind(valor_sql)
         .fetch_all(&state.db)
         .await;
-    // ← ATÉ AQUI
 
     match equipamentos {
-    Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos encontrados", lista)),
-    Err(e) => {
-        eprintln!("Erro busca_com_filtro: {e}"); // ← adiciona isso
-        ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos: {}", e)))
-    }
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Equipamentos encontrados", lista)),
+        Err(e) => {
+            eprintln!("Erro busca_com_filtro: {e}");
+            ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamentos: {}", e)))
+        }
     }
 }
 

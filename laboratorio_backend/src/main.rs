@@ -8,8 +8,7 @@ mod routes;
 mod handlers;
 mod middlewares;
 
-use std::{net::SocketAddr};
-use axum::Router;
+use std::net::SocketAddr;
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -57,11 +56,6 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .expect("Erro ao fazer bind");
-
-    let config = Config::from_env().unwrap_or_else(|e| {
-    eprintln!("ERRO ao carregar config: {}", e);
-    std::process::exit(1);
-    });
 
     axum::serve(listener, app)
         .await

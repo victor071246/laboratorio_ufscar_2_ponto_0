@@ -9,8 +9,9 @@ pub fn rotas() -> Router<AppState> {
     Router::new()
         .route("/", get(ocorrencia::listar))
         .route("/", post(ocorrencia::criar))
-        .route("/buscar", get(ocorrencia::buscar))
-        .route("/{uuid}", get(ocorrencia::buscar))
+        .route("/buscar", get(ocorrencia::busca_com_filtro))
+        .route("/buscar/filtro", get(ocorrencia::buscar))
         .route("/campos", get(ocorrencia::listar_campos_ocorrencia))
+        .route("/{uuid}", get(ocorrencia::buscar_por_uuid))
         .route("/{uuid}/resolver", post(ocorrencia::resolver))
 }

@@ -34,12 +34,11 @@ pub async fn listar(
 pub async fn listar_campos_ocorrencia(
     State(state): State<AppState>
 ) -> ApiResponse<Vec<String>> {
-    let colunas = sqlx::query!(
+    let colunas = sqlx::query_scalar::<_, String>(
         "SELECT column_name FROM information_schema.columns WHERE table_name = 'ocorrencia'"
     )
     .fetch_all(&state.db)
-    .await
-    .map(|rows| rows.into_iter().map(|r| r.column_name.unwrap_or_default()).collect::<Vec<String>>());
+    .await;
 
     match colunas {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Colunas listadas", lista)),
@@ -51,30 +50,60 @@ pub async fn busca_com_filtro(
     State(state): State<AppState>,
     Query(filtro): Query<FiltroDto>
 ) -> ApiResponse<Vec<Ocorrencia>> {
-    let operador = match filtro.operador.as_str() {
-        "gt" | ">" => ">",
-        "lt" | "<" => "<",
-        "gte" | ">=" => ">=",
-        "lte" | "<=" => "<=",
-        _ => "=",
+    let campos_permitidos = [
+        "id", "uuid", "equipamento_id", "registrado_por", "tipo",
+        "descricao", "estado_anterior", "removida_por_prazo",
+        "resolvida_em", "criado_em",
+    ];
+
+    if filtro.campo.is_empty() || filtro.valor.is_empty() {
+        let ocorrencias = sqlx::query_as!(
+            Ocorrencia,
+            r#"SELECT id, uuid, equipamento_id, registrado_por,
+            tipo as "tipo: TipoOcorrencia",
+            descricao, estado_anterior as "estado_anterior: EstadoEquipamento",
+            removida_por_prazo, resolvida_em, criado_em
+            FROM ocorrencia ORDER BY criado_em DESC"#
+        ).fetch_all(&state.db).await;
+
+        return match ocorrencias {
+            Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências listadas", lista)),
+            Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro: {e}")))
+        };
+    }
+
+    if !campos_permitidos.contains(&filtro.campo.as_str()) {
+        return ApiResponse(StatusCode::BAD_REQUEST, DinamicResponse::error("Campo inválido"));
+    }
+
+    let (operador_sql, valor_sql): (&str, String) = match filtro.operador.as_str() {
+        ">" => (">", filtro.valor.clone()),
+        ">=" => (">=", filtro.valor.clone()),
+        "<=" => ("<=", filtro.valor.clone()),
+        "<" => ("<", filtro.valor.clone()),
+        _ => ("ILIKE", format!("%{}%", filtro.valor)),
     };
 
     let sql = format!(
-        r#"SELECT id, uuid, equipamento_id, registrador_por,
+        r#"SELECT id, uuid, equipamento_id, registrado_por,
         tipo as "tipo: TipoOcorrencia",
-        descricao, resolvida_em, criado_em
-        FROM ocorrencia WHERE {} {} $1 ORDER BY criado_em DESC"#,
-        filtro.campo, operador
+        descricao, estado_anterior as "estado_anterior: EstadoEquipamento",
+        removida_por_prazo, resolvida_em, criado_em
+        FROM ocorrencia WHERE {}::text {} $1 ORDER BY criado_em DESC"#,
+        filtro.campo, operador_sql
     );
 
     let ocorrencias = sqlx::query_as::<_, Ocorrencia>(&sql)
-        .bind(filtro.valor)
+        .bind(valor_sql)
         .fetch_all(&state.db)
         .await;
 
     match ocorrencias {
         Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências encontradas", lista)),
-        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências: {}", e)))
+        Err(e) => {
+            eprintln!("Erro busca_com_filtro ocorrencia: {e}");
+            ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências: {e}")))
+        }
     }
 }
 
@@ -103,7 +132,7 @@ pub async fn buscar_por_uuid(
 
 pub async fn buscar(
     State(state): State<AppState>,
-    Query(filtro):  Query<FiltroOcorrenciaDto>,
+    Query(filtro): Query<FiltroOcorrenciaDto>,
 ) -> ApiResponse<Vec<Ocorrencia>> {
     let ocorrencias = sqlx::query_as!(
         Ocorrencia,
@@ -114,7 +143,8 @@ pub async fn buscar(
             FROM ocorrencia
             WHERE ($1::int IS NULL OR equipamento_id = $1)
             AND ($2::tipo_ocorrencia IS NULL OR tipo = $2)
-            AND ($3::bool IS NULL OR ($3 = true AND resolvida_em IS NOT NULL) OR ($3 = false AND resolvida_em IS NULL))ORDER BY criado_em DESC"#,
+            AND ($3::bool IS NULL OR ($3 = true AND resolvida_em IS NOT NULL) OR ($3 = false AND resolvida_em IS NULL))
+            ORDER BY criado_em DESC"#,
         filtro.equipamento_id,
         filtro.tipo as Option<TipoOcorrencia>,
         filtro.resolvida
@@ -123,13 +153,13 @@ pub async fn buscar(
     .await;
 
     match ocorrencias {
-        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências encontradas, ", lista)),
+        Ok(lista) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrências encontradas", lista)),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar ocorrências {e}")))
     }
 }
 
 pub async fn criar(
-    State(state) : State<AppState>,
+    State(state): State<AppState>,
     Json(payload): Json<CriarOcorrenciaDto>,
 ) -> ApiResponse<Ocorrencia> {
     let equipamento = sqlx::query!(
@@ -145,7 +175,6 @@ pub async fn criar(
         Err(e) => return ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar equipamento {e}"))),
     };
 
-    // TODO: registrado_por vem do JWT
     let registrado_por: Option<i32> = None;
 
     let ocorrencia = sqlx::query_as!(
@@ -164,15 +193,14 @@ pub async fn criar(
     ).fetch_one(&state.db)
     .await;
 
-    match ocorrencia{
+    match ocorrencia {
         Ok(o) => ApiResponse(StatusCode::CREATED, DinamicResponse::success("Ocorrência criada", o)),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao criar ocorrência {e}")))
     }
-
 }
 
 pub async fn resolver(
-    State(state) : State<AppState>,
+    State(state): State<AppState>,
     Path(uuid): Path<Uuid>,
 ) -> ApiResponse<Ocorrencia> {
     let ocorrencia = sqlx::query_as!(
@@ -183,7 +211,7 @@ pub async fn resolver(
             tipo as "tipo: TipoOcorrencia",
             descricao, estado_anterior as "estado_anterior: EstadoEquipamento",
             removida_por_prazo, resolvida_em, criado_em"#,
-            uuid
+        uuid
     )
     .fetch_optional(&state.db)
     .await;
@@ -192,6 +220,5 @@ pub async fn resolver(
         Ok(Some(o)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Ocorrência resolvida", o)),
         Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Ocorrência não encontrada")),
         Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Ocorrência não encontrada {e}")))
-
     }
 }

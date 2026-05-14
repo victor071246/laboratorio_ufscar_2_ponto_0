@@ -7,11 +7,6 @@ use crate::services::jwt::{gerar_hash, gerar_jwt, verificar_jwt, verificar_senha
 use crate::AppState;
 
 #[derive(serde::Serialize)]
-pub struct LoginResponse {
-    pub token: String,
-}
-
-#[derive(serde::Serialize)]
 pub struct UsuarioLogado {
     pub nome: String,
     pub email: String,
@@ -19,20 +14,20 @@ pub struct UsuarioLogado {
 }
 
 pub async fn logout(jar: CookieJar) -> (CookieJar, ApiResponse<()>) {
-    let jar = jar.remove(Cookie::from("token"));
+    let jar = jar.remove(Cookie::build("token").path("/").build());
     (jar, ApiResponse(StatusCode::OK, DinamicResponse::success("Logout realizado", ())))
 }
 
 pub async fn checarUsuarioLogado(
     State(state): State<AppState>,
-    jar: CookieJar
+    jar: CookieJar,
 ) -> ApiResponse<UsuarioLogado> {
     let token = match jar.get("token") {
         Some(c) => c.value().to_string(),
         None => return ApiResponse(
             StatusCode::UNAUTHORIZED,
             DinamicResponse::error("Não autenticado"),
-        )
+        ),
     };
 
     let claims = match verificar_jwt(&token, &state.config.jwt_secret) {
@@ -40,7 +35,7 @@ pub async fn checarUsuarioLogado(
         Err(_) => return ApiResponse(
             StatusCode::UNAUTHORIZED,
             DinamicResponse::error("Token inválido"),
-        )
+        ),
     };
 
     ApiResponse(StatusCode::OK, DinamicResponse::success("Ok", UsuarioLogado {
@@ -53,14 +48,14 @@ pub async fn checarUsuarioLogado(
 pub async fn login(
     State(state): State<AppState>,
     jar: CookieJar,
-    Json(payload): Json<LoginDto>
+    Json(payload): Json<LoginDto>,
 ) -> Result<(CookieJar, ApiResponse<()>), ApiResponse<()>> {
     let usuario = sqlx::query_as!(
         crate::models::usuario::Usuario,
         r#"SELECT id, uuid, nome, email, telefone, senha_hash,
             papel as "papel: PapelUsuario", ativo, criado_em, criado_por
             FROM usuario WHERE email = $1 AND ativo = true"#,
-            payload.email
+        payload.email
     )
     .fetch_optional(&state.db)
     .await;
@@ -74,20 +69,20 @@ pub async fn login(
         Err(_) => return Err(ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error("Erro interno"),
-        ))
+        )),
     };
 
     if !verificar_senha(&payload.senha, &usuario.senha_hash) {
         return Err(ApiResponse(
             StatusCode::UNAUTHORIZED,
             DinamicResponse::error("Credenciais inválidas"),
-        ))
+        ));
     }
 
     let token = gerar_jwt(
         &usuario.uuid.to_string(),
         usuario.id,
-        &&usuario.email.to_string(),
+        &usuario.email,
         &usuario.nome,
         usuario.papel.clone(),
         &state.config.jwt_secret,
@@ -101,7 +96,7 @@ pub async fn login(
 
     Ok((
         jar.add(cookie),
-        ApiResponse(StatusCode::OK, DinamicResponse::success("Login realizado", ()))
+        ApiResponse(StatusCode::OK, DinamicResponse::success("Login realizado", ())),
     ))
 }
 
@@ -129,7 +124,6 @@ pub async fn registrar(
     };
 
     let senha_hash = gerar_hash(&payload.senha);
-
     let papel = payload.papel.unwrap_or(PapelUsuario::Aluno);
 
     let result = sqlx::query!(
@@ -152,8 +146,6 @@ pub async fn registrar(
         Err(e) => ApiResponse(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error(format!("Erro ao criar usuário: {}", e)),
-        )
+        ),
     }
-
-
 }
