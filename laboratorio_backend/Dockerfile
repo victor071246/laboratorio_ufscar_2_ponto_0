@@ -8,6 +8,7 @@ RUN mkdir src && echo "fn main() {}" > src/main.rs
 RUN cargo build --release
 RUN rm -rf src
 COPY src ./src
+RUN touch src/main.rs
 COPY .sqlx ./.sqlx
 ENV SQLX_OFFLINE=true
 RUN cargo build --release

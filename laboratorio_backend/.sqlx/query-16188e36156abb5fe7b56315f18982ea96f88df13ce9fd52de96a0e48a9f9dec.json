@@ -1,0 +1,85 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT id, uuid, nome, email, telefone, senha_hash,\n            papel as \"papel: PapelUsuario\", ativo, criado_em, criado_por\n            FROM usuario ORDER BY nome",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "nome",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "email",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "telefone",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "senha_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "papel: PapelUsuario",
+        "type_info": {
+          "Custom": {
+            "name": "papel_usuario",
+            "kind": {
+              "Enum": [
+                "admin",
+                "supervisor",
+                "aluno"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "ativo",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "criado_em",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "criado_por",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "16188e36156abb5fe7b56315f18982ea96f88df13ce9fd52de96a0e48a9f9dec"
+}

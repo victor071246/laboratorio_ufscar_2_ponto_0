@@ -1,0 +1,134 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE equipamento SET\n            nome = COALESCE($1, nome),\n            descricao = COALESCE($2, descricao),\n            estado = COALESCE($3, estado),\n            data_aquisicao = COALESCE($4, data_aquisicao),\n            peso_kg = COALESCE($5, peso_kg),\n            largura_cm = COALESCE($6, largura_cm),\n            altura_cm = COALESCE($7, altura_cm),\n            comprimento_cm = COALESCE($8, comprimento_cm)\n            WHERE uuid = $9\n            RETURNING id, uuid, nome, descricao, estado as \"estado: EstadoEquipamento\",\n            data_aquisicao, peso_kg, largura_cm, altura_cm, comprimento_cm,\n            ultima_vez_disponivel, ultima_vez_em_manutencao, criado_em, criado_por",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "uuid",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "nome",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "descricao",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "estado: EstadoEquipamento",
+        "type_info": {
+          "Custom": {
+            "name": "estado_equipamento",
+            "kind": {
+              "Enum": [
+                "disponivel",
+                "em_manutencao",
+                "quebrado",
+                "reservado",
+                "desativado"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "data_aquisicao",
+        "type_info": "Date"
+      },
+      {
+        "ordinal": 6,
+        "name": "peso_kg",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 7,
+        "name": "largura_cm",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 8,
+        "name": "altura_cm",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 9,
+        "name": "comprimento_cm",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 10,
+        "name": "ultima_vez_disponivel",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 11,
+        "name": "ultima_vez_em_manutencao",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "criado_em",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 13,
+        "name": "criado_por",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Text",
+        {
+          "Custom": {
+            "name": "estado_equipamento",
+            "kind": {
+              "Enum": [
+                "disponivel",
+                "em_manutencao",
+                "quebrado",
+                "reservado",
+                "desativado"
+              ]
+            }
+          }
+        },
+        "Date",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Numeric",
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true
+    ]
+  },
+  "hash": "49188ea579666466c56369f0e12fa6c489a86f26ae924b1c809975858534cd2a"
+}
