@@ -1,0 +1,50 @@
+/* CardDetailPage.module.css */
+.page {
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.card {
+  background: #fbfaf8;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(7, 38, 45, 0.08);
+  border: 1px solid rgba(7, 38, 45, 0.08);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-bottom: 1px solid rgba(7, 38, 45, 0.06);
+  padding-bottom: 1rem;
+}
+
+.label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(7, 38, 45, 0.5);
+}
+
+.value {
+  font-size: 1rem;
+  color: #1e1e1e;
+}

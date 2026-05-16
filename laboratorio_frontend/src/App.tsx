@@ -64,6 +64,7 @@ function App() {
             path="/ocorrencias/consulta"
             element={<DataPage tabela="ocorrencias" />}
           />
+          <Route path="/equipamento/:id"></Route>
         </Route>
       </Routes>
     </BrowserRouter>

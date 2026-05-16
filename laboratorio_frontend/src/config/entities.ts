@@ -12,7 +12,9 @@ type EntityConfig = {
   panelPath: string;
   consultaPath: string;
   cadastroPath: string;
+  detalhePath: string;
   hiddenFields?: string[];
+  editableFields: string[];
 };
 
 export const entities: Record<EntityKey, EntityConfig> = {
@@ -24,6 +26,18 @@ export const entities: Record<EntityKey, EntityConfig> = {
     panelPath: '/equipamentos',
     consultaPath: '/equipamentos/consulta',
     cadastroPath: '/cadastro/equipamentos',
+    detalhePath: '/equipamento/:id',
+    hiddenFields: ['id', 'uuid'],
+    editableFields: [
+      'nome',
+      'descricao',
+      'estado',
+      'data_aquisicao',
+      'peso_kg',
+      'largura_cm',
+      'altura_cm',
+      'comprimento_cm',
+    ],
   },
   agendamentos: {
     singular: 'agendamento',
@@ -33,6 +47,16 @@ export const entities: Record<EntityKey, EntityConfig> = {
     panelPath: '/agendamentos',
     consultaPath: '/agendamentos/consulta',
     cadastroPath: '/cadastro/agendamentos',
+    detalhePath: '/agendamentos/:id',
+    hiddenFields: ['id', 'uuid'],
+    editableFields: [
+      'status',
+      'data_inicio',
+      'data_fim',
+      'notificar_email',
+      'notificar_whatsapp',
+      'observacao',
+    ],
   },
   usuario: {
     singular: 'usuario',
@@ -42,7 +66,9 @@ export const entities: Record<EntityKey, EntityConfig> = {
     panelPath: '/usuarios',
     consultaPath: '/usuarios/consulta',
     cadastroPath: '/cadastro/usuarios',
-    hiddenFields: ['senha_hash'],
+    detalhePath: '/usuario/:id',
+    hiddenFields: ['id', 'uuid', 'senha_hash'],
+    editableFields: ['nome', 'email', 'telefone', 'papel', 'ativo'],
   },
   ocorrencias: {
     singular: 'ocorrencia',
@@ -52,6 +78,9 @@ export const entities: Record<EntityKey, EntityConfig> = {
     panelPath: '/ocorrencias',
     consultaPath: '/ocorrencias/consulta',
     cadastroPath: '/cadastro/ocorrencias',
+    detalhePath: '/ocorrencias/:id',
+    hiddenFields: ['id', 'uuid'],
+    editableFields: ['descricao'],
   },
 };
 

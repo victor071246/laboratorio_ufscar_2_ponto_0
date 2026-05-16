@@ -32,7 +32,7 @@ services:
       context: ./laboratorio_frontend/
       dockerfile: Dockerfile
     volumes:
-      - frontend_dist:/dist
+      - frontend_dist:/app/dist
 
   nginx:
     image: nginx:alpine
