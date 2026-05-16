@@ -1,5 +1,6 @@
-use axum::extract::{Query, State};
+use axum::extract::{Query, State, Path};
 use axum::http::StatusCode;
+use uuid::Uuid;
 
 use crate::models::filtro::FiltroDto;
 use crate::models::usuario::{Usuario, PapelUsuario};
@@ -93,5 +94,26 @@ pub async fn busca_com_filtro(
             StatusCode::INTERNAL_SERVER_ERROR,
             DinamicResponse::error(format!("Erro ao buscar usuários: {}", e)),
         ),
+    }
+}
+
+pub async fn buscar_por_uuid(
+    State(state): State<AppState>,
+    Path(uuid): Path<Uuid>,
+) -> ApiResponse<Usuario> {
+    let usuario = sqlx::query_as!(
+        Usuario,
+        r#"SELECT id, uuid, nome, email, telefone, senha_hash,
+            papel as "papel: PapelUsuario", ativo, criado_em, criado_por
+            FROM usuario WHERE uuid = $1"#,
+        uuid
+    )
+    .fetch_optional(&state.db)
+    .await;
+
+    match usuario {
+        Ok(Some(u)) => ApiResponse(StatusCode::OK, DinamicResponse::success("Usuário encontrado", u)),
+        Ok(None) => ApiResponse(StatusCode::NOT_FOUND, DinamicResponse::error("Usuário não encontrado")),
+        Err(e) => ApiResponse(StatusCode::INTERNAL_SERVER_ERROR, DinamicResponse::error(format!("Erro ao buscar usuário: {}", e)))
     }
 }

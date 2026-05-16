@@ -11,7 +11,7 @@ pub fn rotas() -> Router<AppState> {
         .route("/", post(equipamento::criar))
         .route("/campos", get(equipamento::listar_colunas_tabela))
         .route("/buscar", get(equipamento::buscar))
-        .route("/{uuid}", get(equipamento::buscar_por_uuid))
-        .route("/{uuid}", put(equipamento::atualizar))
-        .route("/{uuid}", delete(equipamento::deletar))
+        .route("/:{uuid}", get(equipamento::buscar_por_uuid))
+        .route("/:{uuid}", put(equipamento::atualizar))
+        .route("/:{uuid}", delete(equipamento::deletar))
 }

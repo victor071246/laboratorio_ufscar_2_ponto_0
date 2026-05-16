@@ -66,7 +66,7 @@ export const entities: Record<EntityKey, EntityConfig> = {
     panelPath: '/usuarios',
     consultaPath: '/usuarios/consulta',
     cadastroPath: '/cadastro/usuarios',
-    detalhePath: '/usuario/:id',
+    detalhePath: '/usuarios/:id',
     hiddenFields: ['id', 'uuid', 'senha_hash'],
     editableFields: ['nome', 'email', 'telefone', 'papel', 'ativo'],
   },

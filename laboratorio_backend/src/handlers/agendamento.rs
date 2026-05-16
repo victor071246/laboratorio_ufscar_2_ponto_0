@@ -1,9 +1,10 @@
 use axum::{
-    Json, extract::{Path, Query, State}, http::StatusCode
+    Extension, Json, extract::{Path, Query, State}, http::StatusCode
 };
+use axum_extra::extract::CookieJar;
 use uuid::Uuid;
 
-use crate::dto::{agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto}, filtro::FiltroDto};
+use crate::{dto::{agendamento::{AtualizarAgendamentoDto, CriarAgendamentoDto}, filtro::FiltroDto}, services::jwt::{Claims, verificar_jwt}};
 use crate::models::agendamento::{Agendamento, StatusAgendamento};
 use crate::response::{ApiResponse, DinamicResponse};
 use crate::AppState;
@@ -136,6 +137,7 @@ pub async fn buscar_por_uuid(
 
 pub async fn criar(
     State(state): State<AppState>,
+    jar: CookieJar,
     Json(payload): Json<CriarAgendamentoDto>,
 ) -> ApiResponse<Agendamento> {
     let equipamento = sqlx::query_scalar!(
@@ -170,7 +172,17 @@ pub async fn criar(
         _ => {}
     }
 
-    let usuario_id = 1;
+     let token = match jar.get("token") {
+        Some(c) => c.value().to_string(),
+        None => return ApiResponse(StatusCode::UNAUTHORIZED, DinamicResponse::error("Não autenticado")),
+    };
+
+    let claims = match verificar_jwt(&token, &state.config.jwt_secret) {
+        Ok(c) => c,
+        Err(_) => return ApiResponse(StatusCode::UNAUTHORIZED, DinamicResponse::error("Token inválido")),
+    };
+
+    let usuario_id = claims.id;
 
     let agendamento = sqlx::query_as!(
         Agendamento,

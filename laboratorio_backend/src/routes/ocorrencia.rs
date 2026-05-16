@@ -12,6 +12,6 @@ pub fn rotas() -> Router<AppState> {
         .route("/buscar", get(ocorrencia::busca_com_filtro))
         .route("/buscar/filtro", get(ocorrencia::buscar))
         .route("/campos", get(ocorrencia::listar_campos_ocorrencia))
-        .route("/{uuid}", get(ocorrencia::buscar_por_uuid))
-        .route("/{uuid}/resolver", post(ocorrencia::resolver))
+        .route("/:{uuid}", get(ocorrencia::buscar_por_uuid))
+        .route("/:{uuid}/resolver", post(ocorrencia::resolver))
 }

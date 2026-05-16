@@ -10,6 +10,7 @@ import './global.css';
 import EntityPanelPage from './pages/EntityPanelPage';
 import DataPage from './pages/DataPage';
 import RequireAuth from './components/RequireAuth';
+import { CardDetailPage } from './pages/DetailPage';
 
 function App() {
   return (
@@ -54,7 +55,11 @@ function App() {
           />
           <Route
             path="/agendamentos/consulta"
-            element={<DataPage tabela="agendamentos" modo="agendamento" />}
+            element={
+              <DataPage
+                tabela="agendamentos" //modo="agendamento"
+              />
+            }
           />
           <Route
             path="/usuarios/consulta"
@@ -64,7 +69,22 @@ function App() {
             path="/ocorrencias/consulta"
             element={<DataPage tabela="ocorrencias" />}
           />
-          <Route path="/equipamento/:id"></Route>
+          <Route
+            path="/equipamento/:id"
+            element={<CardDetailPage tabela="equipamentos" />}
+          />
+          <Route
+            path="/agendamentos/:id"
+            element={<CardDetailPage tabela="agendamentos" />}
+          />
+          <Route
+            path="/usuarios/:id"
+            element={<CardDetailPage tabela="usuario" />}
+          />
+          <Route
+            path="/ocorrencias/:id"
+            element={<CardDetailPage tabela="ocorrencias" />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

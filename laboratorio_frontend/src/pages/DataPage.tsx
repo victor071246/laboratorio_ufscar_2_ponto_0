@@ -31,6 +31,7 @@ export default function DataPage({
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState('');
   const navigate = useNavigate();
+  const [mostrarCancelados, setMostrarCancelados] = useState(false);
 
   function handleClick(item: Row) {
     const id = item.uuid ?? item.id;
@@ -38,7 +39,7 @@ export default function DataPage({
       navigate(`/agendamentos/${id}/grid`);
       return;
     }
-    navigate(`/equipamentos/${id}`);
+    navigate(entity.detalhePath.replace(':id', String(id)));
   }
 
   useEffect(() => {
@@ -54,8 +55,12 @@ export default function DataPage({
     ])
       .then(([dadosRes, camposRes]) => {
         const lista = dadosRes.data.data ?? [];
-        setDados(lista);
-        setResultados(lista);
+        const listaCancelados =
+          tabela === 'agendamentos' && !mostrarCancelados
+            ? lista.filter((item: Row) => item.status !== 'cancelado')
+            : lista;
+        setDados(listaCancelados);
+        setResultados(listaCancelados);
         const hiddenFields = entity.hiddenFields ?? [];
         setCampos(
           (camposRes.data.data ?? []).filter(
@@ -70,7 +75,7 @@ export default function DataPage({
         setErro(`Nao foi possivel carregar ${entity.label.toLowerCase()}.`);
       })
       .finally(() => setLoading(false));
-  }, [entity.endpoint, entity.label]);
+  }, [entity.endpoint, entity.label, mostrarCancelados]);
 
   useEffect(() => {
     const termo = valor.trim().toLowerCase();
@@ -129,6 +134,16 @@ export default function DataPage({
             onOperadorChange={setOperadorSelecionado}
             onValorChange={setValor}
           />
+          {tabela === 'agendamentos' && (
+            <label>
+              <input
+                type="checkbox"
+                checked={mostrarCancelados}
+                onChange={(e) => setMostrarCancelados(e.target.checked)}
+              ></input>
+              Mostrar cancelados
+            </label>
+          )}
         </div>
 
         {loading ? (
@@ -150,7 +165,7 @@ export default function DataPage({
                   <tr
                     key={String(item.uuid ?? item.id ?? index)}
                     onClick={() => handleClick(item)}
-                    style={{ cursor: modo ? 'pointer' : 'default' }}
+                    style={{ cursor: 'pointer' }}
                   >
                     {campos.map((campo) => (
                       <td key={campo}>{formatCellValue(item[campo])}</td>

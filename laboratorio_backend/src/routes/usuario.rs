@@ -10,4 +10,5 @@ pub fn rotas() -> Router<AppState> {
         .route("/", get(usuario::listar_todos_usuarios))
         .route("/campos", get(usuario::listar_campos_usuario))
         .route("/buscar", get(usuario::busca_com_filtro))
+        .route("/:uuid", get(usuario::buscar_por_uuid))
 }
